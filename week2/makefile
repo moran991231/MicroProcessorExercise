@@ -4,3 +4,4 @@ first.o: first.c
 	gcc -c first.c
 second.o: second.c
 	gcc -c second.c
+	

@@ -27,49 +27,43 @@ int int_gpios[5];
 static irqreturn_t button_interrupt(int irq, void *dev_id) {
     irq_num = irq;
     wake_up_interruptible(&wait_queue);
-
     return IRQ_HANDLED;
 }
 
 static int sm9s5422_interrupt_open(struct inode *inode, struct file *file) {
     printk("sm9s5422_interrupt_open \n");
-
     return 0;
 }
 
 static int sm9s5422_interrupt_release(struct inode *inode, struct file *file) {
     printk("sm9s5422_interrupt_release \n");
-
     return 0;
 }
 
 static ssize_t sm9s5422_interrupt_read(struct file *file, char *buf, size_t length, loff_t *ofs) {
     printk("sm9s5422_interrupt_read, 2018440059 Jaesun Park \n");
-
     char msg[100];
     int ret = 0;
 
     interruptible_sleep_on(&wait_queue);
-
     if (irq_num == irqNum[0]) sprintf(msg, "Up");
     if (irq_num == irqNum[1]) sprintf(msg, "Down");
     if (irq_num == irqNum[2]) sprintf(msg, "Left");
     if (irq_num == irqNum[3]) sprintf(msg, "Right");
-    if (irq_num == irqNum[4])
-        sprintf(msg, "Center");
-    else
-        sprintf("??? %d", irq_num);
-
+    if (irq_num == irqNum[4]) sprintf(msg, "Center");
     ret = copy_to_user(buf, msg, 100);
     if (ret < 0) return -1;
 
     return 0;
 }
 
-static struct file_operations sm9s5422_interrupt_fops = {
-    .owner = THIS_MODULE, .open = sm9s5422_interrupt_open, .release = sm9s5422_interrupt_release, .read = sm9s5422_interrupt_read};
+static struct file_operations sm9s5422_interrupt_fops = {.owner = THIS_MODULE,
+                                                         .open = sm9s5422_interrupt_open,
+                                                         .release = sm9s5422_interrupt_release,
+                                                         .read = sm9s5422_interrupt_read};
 
-static struct miscdevice sm9s5422_interrupt_driver = {.minor = MISC_DYNAMIC_MINOR, .name = "sm9s5422_interrupt", .fops = &sm9s5422_interrupt_fops};
+static struct miscdevice sm9s5422_interrupt_driver = {
+    .minor = MISC_DYNAMIC_MINOR, .name = "sm9s5422_interrupt", .fops = &sm9s5422_interrupt_fops};
 
 static int sm9s5422_interrupt_init(void) {
     printk("sm9s5422_interrupt_init \n");

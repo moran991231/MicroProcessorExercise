@@ -10,7 +10,7 @@ static int dev;
 
 int main(int argc, char* argv[]) {
     char buff[100];
-    dev = open("/dev/sm9s5422_interrupt", O_RDONLY);  // options ??
+    dev = open("/dev/sm9s5422_interrupt", O_RDONLY);
 
     if (dev < 0) {
         printf("device open error! \n");

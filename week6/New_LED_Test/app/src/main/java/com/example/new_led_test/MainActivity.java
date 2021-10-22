@@ -46,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
             mBtn[i].setChecked(false);
             mBtn[i].setOnCheckedChangeListener(listener);
         }
-
     }
 
     protected void onPause(){

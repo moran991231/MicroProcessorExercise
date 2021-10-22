@@ -18,20 +18,12 @@ add_library(JNIDriver
         SHARED
         JNIDriver.c
         )
-
-
-find_library( # Sets the name of the path variable.
+find_library(
         log-lib
-
-        # Specifies the name of the NDK library that
-        # you want CMake to locate.
         log)
 
-target_link_libraries( # Specifies the target library.
+target_link_libraries(
         JNIDriver
-
-        # Links the target library to the log library
-        # included in the NDK.
         ${log-lib})
 
 

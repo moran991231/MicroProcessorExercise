@@ -8,9 +8,8 @@ import android.view.View;
 
 import com.example.segment.databinding.ActivityMainBinding;
 
-public class MainActivity extends AppCompatActivity {
 
-    // Used to load the 'segment' library on application startup.
+public class MainActivity extends AppCompatActivity {
     static {
         System.loadLibrary("segment_driver");
     }
@@ -18,8 +17,6 @@ public class MainActivity extends AppCompatActivity {
     private native static void closeDriver();
     private native static void writeDriver(byte[] data, int length);
 
-    private ActivityMainBinding binding;
-    
     int data_int;
     boolean mThreadRun, mStart;
     SegmentThread msegThread;
@@ -62,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
                     data_int=0;
                     Toast.makeText(MainActivity.this, "Input Error", Toast.LENGTH_SHORT).show();
                 }
-                
+
             }
         });
     }
@@ -78,12 +75,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume(){
         if(openDriver("/dev/sm9s5422_segment")<0){
             Toast.makeText(MainActivity.this,"Driver Open failed", Toast.LENGTH_SHORT).show();
-
         }
         mThreadRun = true;
         msegThread = new SegmentThread();
         msegThread.start();
-
         super.onResume();
     }
 }
+

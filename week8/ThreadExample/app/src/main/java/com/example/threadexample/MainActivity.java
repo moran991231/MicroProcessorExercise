@@ -1,15 +1,19 @@
 package com.example.threadexample;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
 
     class SimpleThread extends Thread{
+        private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        String time;
         public void run(){
             while(true){
-                System.out.println(System.currentTimeMillis()+" " +getName());
+                time = sdf.format(new Date(System.currentTimeMillis()));
+                System.out.println(time+" " +getName());
                 try {
                     sleep(1000);
                 } catch (InterruptedException e) {

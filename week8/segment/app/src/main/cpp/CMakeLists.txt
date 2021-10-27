@@ -7,20 +7,15 @@ cmake_minimum_required(VERSION 3.10.2)
 
 
 project("segment")
-
-
 add_library(
         segment_driver
         SHARED
         segment.c)
 
-find_library( # Sets the name of the path variable.
+find_library(
         log-lib
-
-        # Specifies the name of the NDK library that
-        # you want CMake to locate.
         log)
 
-target_link_libraries( # Specifies the target library.
+target_link_libraries(
         segment_driver
         ${log-lib})

@@ -1,7 +1,6 @@
-package com.example.helloworld_android;
+package com.example.helloworld_android_;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
 public class MainActivity extends AppCompatActivity {

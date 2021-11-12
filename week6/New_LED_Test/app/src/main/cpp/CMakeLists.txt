@@ -7,23 +7,20 @@ cmake_minimum_required(VERSION 3.10.2)
 
 # Declares and names the project.
 
-project("led_example")
+project("new_led_test")
 
 # Creates and names a library, sets it as either STATIC
 # or SHARED, and provides the relative paths to its source code.
 # You can define multiple libraries, and CMake builds them for you.
 # Gradle automatically packages shared libraries with your APK.
 
-add_library(JNIDriver
-        SHARED
-        JNIDriver.c
-        )
+add_library(
+    JNIDriver
+    SHARED
+    JNIDriver.c )
 find_library(
-        log-lib
-        log)
-
+    log-lib
+    log )
 target_link_libraries(
-        JNIDriver
-        ${log-lib})
-
-
+    JNIDriver
+    ${log-lib} )

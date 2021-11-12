@@ -1,0 +1,13 @@
+(Host)
+$ make
+$ adb shell
+
+(Device)
+$ LD_LIBRARY_PATH=/vendor/lib.egl
+cd /data/local/tmp
+./GaussianBlur
+exit
+
+(Host)
+adb pull /data/local/tmp/blurred_lena.bmp ./
+display blurred_lena.bmp

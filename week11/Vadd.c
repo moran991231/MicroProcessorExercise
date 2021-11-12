@@ -9,9 +9,11 @@
 #include <time.h>
 
 void addCPU(float *a, float *b, float *r, int n);
+float compareResult(float *cpus, float *gpus, int n);
+float compareResult2(float *cpus, float *gpus, int n);
 
 int main(int argc, char *argv[]) {
-    if (argc < 2) {
+    if (argc < 2) {  // unvalid argument
         puts("usage: Vadd [N] \n");
         return 0;
     }
@@ -25,7 +27,9 @@ int main(int argc, char *argv[]) {
     // Host input vectors
     float *h_a, *h_b;
     // Host output vector
-    float *h_c;
+    float *h_c, *h_c2;
+
+    float temp = 0;
 
     cl_mem d_a, d_b, d_c;
 
@@ -56,6 +60,7 @@ int main(int argc, char *argv[]) {
     h_a = (float *)malloc(bytes);
     h_b = (float *)malloc(bytes);
     h_c = (float *)malloc(bytes);
+    h_c2 = (float *)malloc(bytes);
 
     int i;
     srand(time(NULL));
@@ -63,6 +68,7 @@ int main(int argc, char *argv[]) {
         h_a[i] = (float)rand() / RAND_MAX;
         h_b[i] = (float)rand() / RAND_MAX;
         h_c[i] = 0.0f;
+        h_c2[i] = 0.0f;
     }
 
     size_t globalSize, localSize, grid;
@@ -108,7 +114,7 @@ int main(int argc, char *argv[]) {
 
     gettimeofday(&end, NULL);
     timersub(&end, &start, &timer);
-    printf("GPUtime: %lf\n", (timer.tv_usec / 1000.0 + timer.tv_sec * 1000.0));
+    printf("GPUtime: %lf   ", (timer.tv_usec / 1000.0 + timer.tv_sec * 1000.0));
 
     clReleaseMemObject(d_a);
     clReleaseMemObject(d_b);
@@ -119,15 +125,21 @@ int main(int argc, char *argv[]) {
     clReleaseContext(context);
 
     gettimeofday(&start, NULL);
-    addCPU(h_a, h_b, h_c, n);
+    addCPU(h_a, h_b, h_c2, n);
 
     gettimeofday(&end, NULL);
     timersub(&end, &start, &timer);
     printf("CPUtime: %lf \n", (timer.tv_usec / 1000.0 + timer.tv_sec * 1000.0));
 
-    free(h_a);
-    free(h_b);
-    free(h_c);
+    temp = compareResult2(h_c2, h_c, n);
+    printf("compare result: %lf ", temp);
+    if (temp == 0) {
+        printf("SUCCEEDED!! \n");
+    } else {
+        printf("ERROR!! \n");
+    }
+
+    fflush(stdout);
 
     return 0;
 }
@@ -135,4 +147,20 @@ int main(int argc, char *argv[]) {
 void addCPU(float *a, float *b, float *r, int n) {
     int i = 0;
     for (i = 0; i < n; i++) r[i] = a[i] + b[i];
+}
+float compareResult(float *cpus, float *gpus, int n) {
+    int i = 0;
+    float ret = 0.0f, temp;
+    for (i = 0; i < n; i++) {
+        temp = cpus[i] - gpus[i];
+        ret += (temp >= 0 ? temp : -temp);
+    }
+    return ret;
+}
+
+float compareResult2(float *cpus, float *gpus, int n) {
+    int i = 0;
+    for (i = 0; i < n; i++)
+        if (cpus[i] != gpus[i]) return i + 1;
+    return 0;
 }

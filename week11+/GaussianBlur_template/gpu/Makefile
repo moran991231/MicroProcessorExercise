@@ -1,9 +1,9 @@
 CC = arm-linux-androideabi-g++
 ADB=adb
 
-OPENCL_PATH =/home/mpclass/Downloads/OpenCL_lib_and_include
-CFLAG =  -I$(OPENCL_PATH)/include -g
-LDFLAGS = -l$(OPENCL_PATH)/lib/libGLES_mali.so -lm
+OPENCL_PATH =~/openCL
+CFLAG =  -I $(OPENCL_PATH)/include -g
+LDFLAGS = -l $(OPENCL_PATH)/lib/libGLES_mali.so -lm
 
 TARGET=GaussianBlurGPU
 TARGET_SRC =$(TARGET).cpp bmp.c

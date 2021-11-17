@@ -10,15 +10,18 @@
 void applyGrayScale_cpu(unsigned char *src, unsigned char *dst, int w, int h);
 void rotate_cpu(unsigned char *src, unsigned char *dst, int w, int h);
 
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     struct timeval start, end, timer_cpu;
     BMPHEADER bmpHeader;
     unsigned char *image, *ret_image;
-    if (argc != 4) {
-        printf("./openCLFilter [g/r] [input file name] [output file name]");
+    if (argc != 4)
+    {
+        printf("./grayAndRotate [g/r] [input file name] [output file name]");
         return 0;
     }
 
+    // input image read, create buffer for output image
     char *input_file_name = argv[2], *output_file_name = argv[3];
     image = read_bmp(input_file_name, &bmpHeader);
     ret_image = (char *)malloc(bmpHeader.biSizeImage);
@@ -26,20 +29,20 @@ int main(int argc, char *argv[]) {
     memset(ret_image, 0, bmpHeader.biSizeImage);
 
     // cpu processing begin
-    gettimeofday(&start, NULL);  // timer start
-    switch (argv[1][0]) {
-        case 'g':
-        case 'G':
-            applyGrayScale_cpu(image, ret_image, w, h);
-            break;
-        case 'r':
-        case 'R':
-            rotate_cpu(image, ret_image, w, h);
-            w = bmpHeader.biHeight;
-            h = bmpHeader.biWidth;
-            break;
+    gettimeofday(&start, NULL); // timer start
+    switch (argv[1][0])
+    {
+    case 'g':
+    case 'G':
+        applyGrayScale_cpu(image, ret_image, w, h);
+        break;
+    case 'r':
+    case 'R':
+        rotate_cpu(image, ret_image, w, h);
+        w = bmpHeader.biHeight, h = bmpHeader.biWidth; // swap w,h
+        break;
     }
-    gettimeofday(&end, NULL);  // timer end
+    gettimeofday(&end, NULL); // timer end
     timersub(&end, &start, &timer_cpu);
     printf("CPUtime : %lf\n", (timer_cpu.tv_usec / 1000.0 + timer_cpu.tv_sec * 1000.0));
     // cpu processing end
@@ -53,10 +56,12 @@ int main(int argc, char *argv[]) {
     return 0;
 }
 
-void applyGrayScale_cpu(unsigned char *src, unsigned char *dst, int w, int h) {
+void applyGrayScale_cpu(unsigned char *src, unsigned char *dst, int w, int h)
+{
     float red, green, blue, gray;
     int pix, i;
-    for (i = 0; i < w * h; i++) {
+    for (i = 0; i < w * h; i++)
+    {
         pix = i * 3;
         red = src[pix + 0] * 0.2126f;
         green = src[pix + 1] * 0.7152f;
@@ -66,9 +71,9 @@ void applyGrayScale_cpu(unsigned char *src, unsigned char *dst, int w, int h) {
     }
 }
 
-void rotate_cpu(unsigned char *src, unsigned char *dst, int w, int h) {
-    // rotation matrix
-    /*
+void rotate_cpu(unsigned char *src, unsigned char *dst, int w, int h)
+{
+    /* rotation matrix
     |cos(a) -sin(a)| |c|  = |c*cos(a) - r*sin(a)|  = |c'|
     |sin(a)  cos(a)| |r|    |c*sin(a) + r*cos(a)|  = |r'|
     */
@@ -77,11 +82,13 @@ void rotate_cpu(unsigned char *src, unsigned char *dst, int w, int h) {
     int new_w = h, new_h = w;
     int new_r, new_c, pix, new_pix;
     int max = w * h * 3;
-    for (r = 0; r < h; r++) {
-        for (c = 0; c < w; c++) {
+    for (r = 0; r < h; r++)
+    {
+        for (c = 0; c < w; c++)
+        {
             pix = (r * w + c) * 3;
             new_c = 0 + r;
-            new_r = -c + 0 + (w - 1);
+            new_r = -c + 0 + (w - 1); // add (w-1): image shift to prevent new_pix having negetive value
             new_pix = (new_r * new_w + new_c) * 3;
             dst[new_pix + 0] = src[pix + 0];
             dst[new_pix + 1] = src[pix + 1];

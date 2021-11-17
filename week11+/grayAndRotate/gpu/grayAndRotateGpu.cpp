@@ -11,53 +11,58 @@
 #define checkCL(expression)                                              \
     {                                                                    \
         cl_int err = (expression);                                       \
-        if (err < 0 && err > -64) {                                      \
+        if (err < 0 && err > -64)                                        \
+        {                                                                \
             printf("Error on line %d. error code: %d\n", __LINE__, err); \
             exit(0);                                                     \
         }                                                                \
     }
 
-char* read_kernel_file(char* cl_file_name, size_t& kernel_file_size);
+char *read_kernel_file(char *cl_file_name, size_t &kernel_file_size);
 
-void addCPU(float* a, float* b, float* r, int n);
+int opencl_infra_creation(cl_context &context, cl_command_queue &queue, cl_program &program,
+                          cl_kernel &kernel, char *kernel_file_buffer, size_t kernel_file_size,
+                          char *kernel_name);
 
-int opencl_infra_creation(cl_context& context, cl_command_queue& queue, cl_program& program,
-                          cl_kernel& kernel, char* kernel_file_buffer, size_t kernel_file_size,
-                          char* kernel_name);
+int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &kernel,
+                      size_t globalSize, size_t localSize, BMPHEADER &bmpHeader, cl_mem &d_src,
+                      cl_mem &d_dst, unsigned char *image, unsigned char *ret_img);
 
-int launch_the_kernel(cl_context& context, cl_command_queue& queue, cl_kernel& kernel,
-                      size_t globalSize, size_t localSize, BMPHEADER& bmpHeader, cl_mem& d_src,
-                      cl_mem& d_dst, unsigned char* image, unsigned char* ret_img);
-
-int main(int argc, char* argv[]) {
-    if (argc != 4) {
+int main(int argc, char *argv[])
+{
+    if (argc != 4)
+    {
         printf("./grayAndRotateGpu [g/r] [input file name] [output file name]\n");
         return 0;
     }
 
     char *input_image_name = argv[2], *output_image_name = argv[3];
 
+    // read kernel file
     size_t kernel_file_size;
-    char* cl_file_name = "grayAndRotateKernel.cl";
-    char* kernel_file_buffer = read_kernel_file(cl_file_name, kernel_file_size);
+    char *cl_file_name = "grayAndRotateKernel.cl";
+    char *kernel_file_buffer = read_kernel_file(cl_file_name, kernel_file_size);
 
     // read image to processing
     BMPHEADER bmpHeader;
     unsigned char *image, *ret_img;
-    image = (unsigned char*)read_bmp(input_image_name, &bmpHeader);
-    ret_img = (unsigned char*)malloc(bmpHeader.biSizeImage);
+    image = (unsigned char *)read_bmp(input_image_name, &bmpHeader);
+    ret_img = (unsigned char *)malloc(bmpHeader.biSizeImage);
     int w = bmpHeader.biWidth, h = bmpHeader.biHeight;
-    char* kernel_name;
-    switch (argv[1][0]) {
-        case 'g':
-        case 'G':
-            kernel_name = "kernel_gray";
-            break;
-        case 'r':
-        case 'R':
-            kernel_name = "kernel_rotate";
-            h = bmpHeader.biWidth, w = bmpHeader.biHeight;
-            break;
+    char *kernel_name;
+
+    // select  kernel
+    switch (argv[1][0])
+    {
+    case 'g':
+    case 'G':
+        kernel_name = "kernel_gray";
+        break;
+    case 'r':
+    case 'R':
+        kernel_name = "kernel_rotate";
+        h = bmpHeader.biWidth, w = bmpHeader.biHeight; // swap w,h
+        break;
     }
 
     // Device input buffers
@@ -65,10 +70,10 @@ int main(int argc, char* argv[]) {
     // Device output buffer
     cl_mem d_dst;
 
-    cl_context context;      // context
-    cl_command_queue queue;  // command queue
-    cl_program program;      // program
-    cl_kernel kernel;        // kernel
+    cl_context context;     // context
+    cl_command_queue queue; // command queue
+    cl_program program;     // program
+    cl_kernel kernel;       // kernel
 
     size_t globalSize, localSize, grid;
 
@@ -77,15 +82,15 @@ int main(int argc, char* argv[]) {
     int n_pix = w * h;
 
     // Number of total work items - localSize must be devisor
-    grid = n_pix / localSize + ((n_pix % localSize) ? 1 : 0);  // TODO
-    globalSize = grid * localSize;                             // TODO
+    grid = n_pix / localSize + ((n_pix % localSize) ? 1 : 0);
+    globalSize = grid * localSize;
     opencl_infra_creation(context, queue, program, kernel, kernel_file_buffer, kernel_file_size,
                           kernel_name);
 
     launch_the_kernel(context, queue, kernel, globalSize, localSize, bmpHeader, d_src, d_dst, image,
                       ret_img);
 
-    write_bmp(output_image_name, w, h, (char*)ret_img);  // TODO
+    write_bmp(output_image_name, w, h, (char *)ret_img);
 
     // release OpenCL resources
     checkCL(clReleaseMemObject(d_src));
@@ -102,12 +107,13 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-int opencl_infra_creation(cl_context& context, cl_command_queue& queue, cl_program& program,
-                          cl_kernel& kernel, char* kernel_file_buffer, size_t kernel_file_size,
-                          char* kernel_name) {
+int opencl_infra_creation(cl_context &context, cl_command_queue &queue, cl_program &program,
+                          cl_kernel &kernel, char *kernel_file_buffer, size_t kernel_file_size,
+                          char *kernel_name)
+{
     cl_int err;
-    cl_platform_id cpPlatform;  // OpenCL platform
-    cl_device_id device_id;     // device ID
+    cl_platform_id cpPlatform; // OpenCL platform
+    cl_device_id device_id;    // device ID
     // Bind to platform
     checkCL(clGetPlatformIDs(1, &cpPlatform, NULL));
 
@@ -122,7 +128,7 @@ int opencl_infra_creation(cl_context& context, cl_command_queue& queue, cl_progr
     checkCL(err);
 
     // Create the compute program from the source buffer
-    program = clCreateProgramWithSource(context, 1, (const char**)&kernel_file_buffer,
+    program = clCreateProgramWithSource(context, 1, (const char **)&kernel_file_buffer,
                                         &kernel_file_size, &err);
     checkCL(err);
 
@@ -136,9 +142,10 @@ int opencl_infra_creation(cl_context& context, cl_command_queue& queue, cl_progr
     return 0;
 }
 
-int launch_the_kernel(cl_context& context, cl_command_queue& queue, cl_kernel& kernel,
-                      size_t globalSize, size_t localSize, BMPHEADER& bmpHeader, cl_mem& d_src,
-                      cl_mem& d_dst, unsigned char* image, unsigned char* ret_img) {
+int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &kernel,
+                      size_t globalSize, size_t localSize, BMPHEADER &bmpHeader, cl_mem &d_src,
+                      cl_mem &d_dst, unsigned char *image, unsigned char *ret_img)
+{
     cl_int err;
     struct timeval start, end, timer;
 
@@ -176,18 +183,19 @@ int launch_the_kernel(cl_context& context, cl_command_queue& queue, cl_kernel& k
     return 0;
 }
 
-char* read_kernel_file(char* cl_file_name, size_t& kernel_file_size) {
-    FILE* file_handle = fopen(cl_file_name, "r");
-    if (file_handle == NULL) {
+char *read_kernel_file(char *cl_file_name, size_t &kernel_file_size)
+{
+    FILE *file_handle = fopen(cl_file_name, "r");
+    if (file_handle == NULL)
+    {
         printf("Couldn't find the file");
         exit(1);
     }
-
     // read kernel file
     fseek(file_handle, 0, SEEK_END);
     kernel_file_size = ftell(file_handle);
     rewind(file_handle);
-    char* kernel_file_buffer = (char*)malloc(kernel_file_size + 1);
+    char *kernel_file_buffer = (char *)malloc(kernel_file_size + 1);
     kernel_file_buffer[kernel_file_size] = '\0';
     fread(kernel_file_buffer, sizeof(char), kernel_file_size, file_handle);
     fclose(file_handle);

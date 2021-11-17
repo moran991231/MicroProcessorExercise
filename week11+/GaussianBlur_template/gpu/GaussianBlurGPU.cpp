@@ -11,52 +11,55 @@
 #define checkCL(expression)                                              \
     {                                                                    \
         cl_int err = (expression);                                       \
-        if (err < 0 && err > -64) {                                      \
+        if (err < 0 && err > -64)                                        \
+        {                                                                \
             printf("Error on line %d. error code: %d\n", __LINE__, err); \
             exit(0);                                                     \
         }                                                                \
     }
 
-void addCPU(float* a, float* b, float* r, int n);
+void addCPU(float *a, float *b, float *r, int n);
 
-int opencl_infra_creation(cl_context& context, cl_platform_id& cpPlatform, cl_device_id& device_id,
-                          cl_command_queue& queue, cl_program& program, cl_kernel& kernel,
-                          char* kernel_file_buffer, size_t kernel_file_size, BMPHEADER& bmpHeader,
-                          unsigned char* kernel_name, cl_mem& d_src, cl_mem& d_dst);
+int opencl_infra_creation(cl_context &context, cl_platform_id &cpPlatform, cl_device_id &device_id,
+                          cl_command_queue &queue, cl_program &program, cl_kernel &kernel,
+                          char *kernel_file_buffer, size_t kernel_file_size, BMPHEADER &bmpHeader,
+                          unsigned char *kernel_name, cl_mem &d_src, cl_mem &d_dst);
 
-int launch_the_kernel(cl_context& context, cl_command_queue& queue, cl_kernel& kernel,
-                      size_t globalSize, size_t localSize, BMPHEADER& bmpHeader, cl_mem& d_src,
-                      cl_mem& d_dst, unsigned char* image, unsigned char* blurred_img);
+int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &kernel,
+                      size_t globalSize, size_t localSize, BMPHEADER &bmpHeader, cl_mem &d_src,
+                      cl_mem &d_dst, unsigned char *image, unsigned char *blurred_img);
 
-int main(int argc, char* argv[]) {
-    FILE* file_handle;
+int main(int argc, char *argv[])
+{
+    FILE *file_handle;
     char *kernel_file_buffer, *file_log;
     size_t kernel_file_size, log_size;
     struct timeval start, end, timer;
 
     BMPHEADER bmpHeader;
-    unsigned char* image;
-    unsigned char* blurred_img;
+    unsigned char *image;
+    unsigned char *blurred_img;
 
-    char* input_image_name = "lena.bmp";
-    char* output_image_name = "blurred_lena_gpu.bmp";
-    char* cl_file_name = "Blur.cl";
-    char* kernel_name = "kernel_blur";
+    char *input_image_name = "lena.bmp";
+    char *output_image_name = "blurred_lena_gpu.bmp";
+    char *cl_file_name = "Blur.cl";
+    char *kernel_name = "kernel_blur";
 
     // Device input buffers
     cl_mem d_src;
     // Device output buffer
     cl_mem d_dst;
 
-    cl_platform_id cpPlatform;  // OpenCL platform
-    cl_device_id device_id;     // device ID
-    cl_context context;         // context
-    cl_command_queue queue;     // command queue
-    cl_program program;         // program
-    cl_kernel kernel;           // kernel
+    cl_platform_id cpPlatform; // OpenCL platform
+    cl_device_id device_id;    // device ID
+    cl_context context;        // context
+    cl_command_queue queue;    // command queue
+    cl_program program;        // program
+    cl_kernel kernel;          // kernel
 
     file_handle = fopen(cl_file_name, "r");
-    if (file_handle == NULL) {
+    if (file_handle == NULL)
+    {
         printf("Couldn't find the file");
         exit(1);
     }
@@ -65,14 +68,14 @@ int main(int argc, char* argv[]) {
     fseek(file_handle, 0, SEEK_END);
     kernel_file_size = ftell(file_handle);
     rewind(file_handle);
-    kernel_file_buffer = (char*)malloc(kernel_file_size + 1);
+    kernel_file_buffer = (char *)malloc(kernel_file_size + 1);
     kernel_file_buffer[kernel_file_size] = '\0';
     fread(kernel_file_buffer, sizeof(char), kernel_file_size, file_handle);
     fclose(file_handle);
 
     // read image to processing
     image = read_bmp(input_image_name, &bmpHeader);
-    blurred_img = (unsigned char*)malloc(bmpHeader.biSizeImage);
+    blurred_img = (unsigned char *)malloc(bmpHeader.biSizeImage);
 
     // Initialize vectors on host
     int i;
@@ -84,8 +87,8 @@ int main(int argc, char* argv[]) {
     int n_pix = bmpHeader.biWidth * bmpHeader.biHeight;
 
     // Number of total work items - localSize must be devisor
-    grid = n_pix / localSize + ((n_pix % localSize) ? 1 : 0);  // TODO
-    globalSize = grid * localSize;                             // TODO
+    grid = n_pix / localSize + ((n_pix % localSize) ? 1 : 0); // TODO
+    globalSize = grid * localSize;                            // TODO
     opencl_infra_creation(context, cpPlatform, device_id, queue, program, kernel,
                           kernel_file_buffer, kernel_file_size, bmpHeader, kernel_name, d_src,
                           d_dst);
@@ -93,7 +96,7 @@ int main(int argc, char* argv[]) {
     launch_the_kernel(context, queue, kernel, globalSize, localSize, bmpHeader, d_src, d_dst, image,
                       blurred_img);
 
-    write_bmp(output_image_name, bmpHeader.biWidth, bmpHeader.biHeight, blurred_img);  // TODO
+    write_bmp(output_image_name, bmpHeader.biWidth, bmpHeader.biHeight, blurred_img); // TODO
 
     // release OpenCL resources
     checkCL(clReleaseMemObject(d_src));
@@ -110,43 +113,32 @@ int main(int argc, char* argv[]) {
     return 0;
 }
 
-int opencl_infra_creation(cl_context& context, cl_platform_id& cpPlatform, cl_device_id& device_id,
-                          cl_command_queue& queue, cl_program& program, cl_kernel& kernel,
-                          char* kernel_file_buffer, size_t kernel_file_size, BMPHEADER& bmpHeader,
-                          unsigned char* kernel_name, cl_mem& d_src, cl_mem& d_dst) {
+int opencl_infra_creation(cl_context &context, cl_platform_id &cpPlatform, cl_device_id &device_id,
+                          cl_command_queue &queue, cl_program &program, cl_kernel &kernel,
+                          char *kernel_file_buffer, size_t kernel_file_size, BMPHEADER &bmpHeader,
+                          unsigned char *kernel_name, cl_mem &d_src, cl_mem &d_dst)
+{
     cl_int err;
 
-    // Bind to platform
-    checkCL(clGetPlatformIDs(1, &cpPlatform, NULL));
-
-    // Get ID for the device
-    checkCL(clGetDeviceIDs(cpPlatform, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL));
-
-    // Create a context
-    context = clCreateContext(0, 1, &device_id, NULL, NULL, &err);
-
-    // Create a command queue
-    queue = clCreateCommandQueue(context, device_id, 0, &err);
+    checkCL(clGetPlatformIDs(1, &cpPlatform, NULL));                              // Bind to platform
+    checkCL(clGetDeviceIDs(cpPlatform, CL_DEVICE_TYPE_GPU, 1, &device_id, NULL)); // Get ID for the device
+    context = clCreateContext(0, 1, &device_id, NULL, NULL, &err);                // Create a context
+    queue = clCreateCommandQueue(context, device_id, 0, &err);                    // Create a command queue
     checkCL(err);
-
-    // Create the compute program from the source buffer
-    program = clCreateProgramWithSource(context, 1, (const char**)&kernel_file_buffer,
-                                        &kernel_file_size, &err);
+    program = clCreateProgramWithSource(context, 1, (const char **)&kernel_file_buffer,
+                                        &kernel_file_size, &err); // Create the compute program from the source buffer
     checkCL(err);
-
-    // Build the program executable
-    checkCL(clBuildProgram(program, 0, NULL, NULL, NULL, NULL));
-
-    // Create the compute kernel in the program we wish to run
-    kernel = clCreateKernel(program, kernel_name, &err);
+    checkCL(clBuildProgram(program, 0, NULL, NULL, NULL, NULL)); // Build the program executable
+    kernel = clCreateKernel(program, kernel_name, &err);         // Create the compute kernel in the program we wish to run
     checkCL(err);
 
     return 0;
 }
 
-int launch_the_kernel(cl_context& context, cl_command_queue& queue, cl_kernel& kernel,
-                      size_t globalSize, size_t localSize, BMPHEADER& bmpHeader, cl_mem& d_src,
-                      cl_mem& d_dst, unsigned char* image, unsigned char* blurred_img) {
+int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &kernel,
+                      size_t globalSize, size_t localSize, BMPHEADER &bmpHeader, cl_mem &d_src,
+                      cl_mem &d_dst, unsigned char *image, unsigned char *blurred_img)
+{
     cl_int err;
     struct timeval start, end, timer;
 

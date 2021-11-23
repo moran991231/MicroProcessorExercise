@@ -149,7 +149,7 @@ static int sm9s5422_segment_release(struct inode *inode, struct file *file) {
     return 0;
 }
 
-#define MDELAY_ 2
+#define MDELAY_ 4
 static ssize_t sm9s5422_segment_write(struct file *file, const char *buf, size_t length,
                                       loff_t *ofs) {
     printk("sm9s5422_segment_write, \n");

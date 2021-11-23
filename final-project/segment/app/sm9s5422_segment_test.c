@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     if (argc != 3) {
         printf("usage: %s [number(str)] [time]\n", argv[0]);
     }
-    // time: light_time = 1: 15.45ms
+    // time: light_time = 1: 27.46ms
 
     char temp_val[6] = {0};
     for (int i = 0; i < 6; i++) {

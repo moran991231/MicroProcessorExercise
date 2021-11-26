@@ -13,16 +13,12 @@ import android.widget.TextView;
 import com.example.gaussian_blur_jni.databinding.ActivityMainBinding;
 
 public class MainActivity extends AppCompatActivity {
-
-    // Used to load the 'gaussian_blur_jni' library on application startup.
     static {
         System.loadLibrary("OpenCLDriver");
     }
     public native Bitmap GaussianBlurBitmap(Bitmap bitmap);
     public native Bitmap GaussianBlurBitmapGpu(Bitmap bitmap);
 
-
-    private ActivityMainBinding binding;
     ImageView imgV;
     Bitmap buf_bitmap;
     Bitmap orig_bitmap;
@@ -48,13 +44,11 @@ public class MainActivity extends AppCompatActivity {
 
         bCpu.setOnClickListener(v->{
             float start = (float) System.nanoTime()/1_000_000L;
-//            buf_bitmap = buf_bitmap.copy(options.inPreferredConfig, true);
             GaussianBlurBitmap(buf_bitmap);
             imgV.setImageBitmap(buf_bitmap);
             float end = (float) System.nanoTime()/1_000_000L;
             float timesub = end-start;
-            tvTime.setText("Execution time: "+timesub+" ms");
-
+            tvTime.setText("   Execution time: "+timesub+" ms");
         });
         bGpu.setOnClickListener(v->{
             float start = (float) System.nanoTime()/1_000_000L;
@@ -64,16 +58,12 @@ public class MainActivity extends AppCompatActivity {
             imgV.setImageBitmap(buf_bitmap);
             float end = (float) System.nanoTime()/1_000_000L;
             float timesub = end-start;
-            tvTime.setText("Execution time: "+timesub+" ms");
-
+            tvTime.setText("   Execution time: "+timesub+" ms");
         });
         bOrig.setOnClickListener(v->{
-            tvTime.setText("Execution time: ");
+            tvTime.setText("   - ");
             buf_bitmap = orig_bitmap.copy(options.inPreferredConfig, true);
             imgV.setImageBitmap(orig_bitmap);
         });
-
-
     }
-
 }

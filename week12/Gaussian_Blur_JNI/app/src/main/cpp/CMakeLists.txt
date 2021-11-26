@@ -28,7 +28,6 @@ find_library( # Sets the name of the path variable.
 
 target_link_libraries( # Specifies the target library.
         OpenCLDriver
-        E:/MicroProcessorExercise/week12/Gaussian_Blur_JNI/app/src/main/jniLibs/armeabi-v7a/libGLES_mali.so
+        E:/MicroProcessorExercise/opencl/lib/libGLES_mali.so
         ${log-lib}
         ${jnigraphics-lib})
-target_include_directories(OpenCLDriver PRIVATE src/main/cpp)

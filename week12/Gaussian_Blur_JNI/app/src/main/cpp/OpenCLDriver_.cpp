@@ -1,7 +1,6 @@
 #include <jni.h>
 #include <stdio.h>
 #include <stdlib.h>
-//#inclde <sys/time.h>
 #include <android/log.h>
 #include <android/bitmap.h>
 #include <jni.h>

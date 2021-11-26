@@ -50,7 +50,7 @@
         android:id="@+id/tvTime"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Time: "
+        android:text=""
         tools:layout_editor_absoluteX="16dp"
         tools:layout_editor_absoluteY="526dp" />
 
@@ -58,7 +58,7 @@
         android:id="@+id/tvName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2018440059 Jaesun Park"
+        android:text="   2018440059 Jaesun Park"
         tools:layout_editor_absoluteX="17dp"
         tools:layout_editor_absoluteY="553dp" />
 </androidx.appcompat.widget.LinearLayoutCompat>

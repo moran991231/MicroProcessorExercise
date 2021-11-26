@@ -18,8 +18,6 @@
         }                                                                \
     }
 
-void addCPU(float *a, float *b, float *r, int n);
-
 int opencl_infra_creation(cl_context &context, cl_platform_id &cpPlatform, cl_device_id &device_id,
                           cl_command_queue &queue, cl_program &program, cl_kernel &kernel,
                           char *kernel_file_buffer, size_t kernel_file_size, BMPHEADER &bmpHeader,

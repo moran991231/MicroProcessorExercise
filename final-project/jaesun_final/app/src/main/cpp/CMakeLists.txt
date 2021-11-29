@@ -11,14 +11,18 @@ project("jaesun_final")
 
 add_library(GLES_mali STATIC IMPORTED)
 add_library( image SHARED image.cpp)
-add_library( board SHARED target_board_devices.c)
+add_library( gpio_button SHARED gpio_button.c)
+add_library( led SHARED led.c)
+add_library( segment SHARED seven_segment.c)
 
 find_library(jnigraphics-lib jnigraphics)
 find_library(log-lib log)
 
 target_link_libraries(
         image
-        board
+        gpio_button
+        led
+        segment
         E:/MicroProcessorExercise/opencl/lib/libGLES_mali.so
         ${log-lib}
         ${jnigraphics-lib})

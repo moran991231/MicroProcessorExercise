@@ -3,9 +3,10 @@ export CROSS_COMPILE=arm-eabi-
 
 CC = arm-eabi-gcc
 ADB = adb 
+TNAME=sm9s5422_segment_js
 
 ifneq ($(KERNELRELEASE),)
-obj-m :=sm9s5422_segment.o
+obj-m :=$(TNAME).o
 else
 KDIR := ~/linux
 
@@ -13,14 +14,15 @@ all:
 	$(MAKE) -C $(KDIR) M=$(shell pwd) modules
 
 	echo
-	echo "**** Install: " /system/lib/modules/sm9s5422_segment.ko "****"
-	$(ADB) push sm9s5422_segment.ko /system/lib/modules/
-	$(ADB) shell chmod 644 /system/lib/modules/sm9s5422_segment.ko
+	echo "**** Install: " /system/lib/modules/$(TNAME).ko "****"
+	$(ADB) push $(TNAME).ko /system/lib/modules/
+	$(ADB) shell chmod 644 /system/lib/modules/$(TNAME).ko
 	echo
-	echo "**** Load Module: " /system/lib/modules/sm9s5422_segment.ko "****"
+	echo "**** Load Module: " /system/lib/modules/$(TNAME).ko "****"
 	$(ADB) shell toolbox rmmod sm9s5422_segment > /dev/null
-	$(ADB) shell insmod /system/lib/modules/sm9s5422_segment.ko
-	$(ADB) shell lsmod | grep sm9s5422_segment
+	$(ADB) shell toolbox rmmod $(TNAME) > /dev/null
+	$(ADB) shell insmod /system/lib/modules/$(TNAME).ko
+	$(ADB) shell lsmod | grep $(TNAME)
 	echo "Succeeded~~"
 endif
 

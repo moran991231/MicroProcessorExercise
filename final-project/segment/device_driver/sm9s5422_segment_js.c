@@ -120,9 +120,9 @@ int Getsegmentcode_base(int x) {
     return 0;
 }
 
-static int sm9s5422_segment_open(struct inode *inode, struct file *file) {
+static int sm9s5422_segment_js_open(struct inode *inode, struct file *file) {
     int err, i;
-    printk("sm9s5422_segment_open, \n");
+    printk("sm9s5422_segment_js_open, \n");
     for (i = 0; i < 8; i++) {
         err = gpio_request(gpe0(i), "GPE0");
         if (err) printk("segment.c failed to request GPE0(%d) \n", i);
@@ -139,9 +139,9 @@ static int sm9s5422_segment_open(struct inode *inode, struct file *file) {
     return 0;
 }
 
-static int sm9s5422_segment_release(struct inode *inode, struct file *file) {
+static int sm9s5422_segment_js_release(struct inode *inode, struct file *file) {
     int i;
-    printk("sm9s5422_segment_release, \n");
+    printk("sm9s5422_segment_js_release, \n");
 
     for (i = 0; i < 8; i++) gpio_free(gpe0(i));
     for (i = 0; i < 7; i++)
@@ -150,9 +150,9 @@ static int sm9s5422_segment_release(struct inode *inode, struct file *file) {
 }
 
 #define MDELAY_ 4
-static ssize_t sm9s5422_segment_write(struct file *file, const char *buf, size_t length,
-                                      loff_t *ofs) {
-    printk("sm9s5422_segment_write, \n");
+static ssize_t sm9s5422_segment_js_write(struct file *file, const char *buf, size_t length,
+                                         loff_t *ofs) {
+    printk("sm9s5422_segment_js_write, \n");
 
     unsigned int ret, i, j;
     unsigned char data[6];
@@ -191,33 +191,25 @@ static ssize_t sm9s5422_segment_write(struct file *file, const char *buf, size_t
     return length;
 }
 
-static struct file_operations sm9s5422_segment_fops = {
+static struct file_operations sm9s5422_segment_js_fops = {
     .owner = THIS_MODULE,
-    .open = sm9s5422_segment_open,
-    .release = sm9s5422_segment_release,
-    .write = sm9s5422_segment_write,
+    .open = sm9s5422_segment_js_open,
+    .release = sm9s5422_segment_js_release,
+    .write = sm9s5422_segment_js_write,
 };
 
-static struct miscdevice sm9s5422_segment_driver = {
+static struct miscdevice sm9s5422_segment_js_driver = {
     .minor = MISC_DYNAMIC_MINOR,
-    .name = "sm9s5422_segment",
-    .fops = &sm9s5422_segment_fops,
+    .name = "sm9s5422_segment_js",
+    .fops = &sm9s5422_segment_js_fops,
 };
 
-static int sm9s5422_segment_init(void) {
-    printk("sm9s5422_segment_init, \n");
+static int sm9s5422_segment_js_init(void) { return misc_register(&sm9s5422_segment_js_driver); }
 
-    return misc_register(&sm9s5422_segment_driver);
-}
+static void sm9s5422_segment_js_exit(void) { misc_deregister(&sm9s5422_segment_js_driver); }
 
-static void sm9s5422_segment_exit(void) {
-    printk("sm9s5422_segment_exit, \n");
-
-    misc_deregister(&sm9s5422_segment_driver);
-}
-
-module_init(sm9s5422_segment_init);
-module_exit(sm9s5422_segment_exit);
+module_init(sm9s5422_segment_js_init);
+module_exit(sm9s5422_segment_js_exit);
 
 MODULE_AUTHOR("Hanback");
 MODULE_DESCRIPTION("Segment Control");

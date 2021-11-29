@@ -30,11 +30,11 @@ int main(int argc, char *argv[]) {
     }
 
     int time = atoi(argv[2]);
-    if ((fd = open("/dev/sm9s5422_segment", O_RDWR | O_SYNC)) < 0) {
+    if ((fd = open("/dev/sm9s5422_segment_js", O_RDWR | O_SYNC)) < 0) {
         printf("FND open failed\n");
         exit(1);
     }
-    ioctl(fd, 0, NULL, NULL);
+    // ioctl(fd, 0, NULL, NULL);
 
     gettimeofday(&start, NULL);
     for (i = 0; i < time; i++) write(fd, &temp_val, 6);
@@ -42,8 +42,8 @@ int main(int argc, char *argv[]) {
     timersub(&end, &start, &timer);
     double ms = timer.tv_usec / 1000.0 + timer.tv_sec * 1000.0;
     double ms_time = ms / time;
+    close(fd);
     printf(" ms / time = %lf / %lf = %lf\n", ms, (double)time, ms_time);
 
-    close(fd);
     return 0;
 }

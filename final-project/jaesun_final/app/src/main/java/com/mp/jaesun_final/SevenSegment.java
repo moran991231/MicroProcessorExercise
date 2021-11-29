@@ -8,14 +8,14 @@ public class SevenSegment {
     }
     private native int openDriver(String path);
     private native void closeDriver();
-    private native void writeDriver(byte[] arr, int count);
+    private native void writeDriver(byte[] arr, int count, int time);
 
 
-    public static final byte[] GOOD__={'G','O','O','D','_','_'}, BAD___ ={'B','A','D','_','_','_'}, EMPTY={'_','_','_','_','_','_'};
+    public static final byte[] GOOD__={71,'O','O','D','_','_'}, BAD___ ={'B','A','D','_','_','_'}, EMPTY={'_','_','_','_','_','_'};
 
     private byte[] buffer=EMPTY;
     private int updateCount=0;
-    private final String DRIVER_NAME= "/dev/sm9s5422_segment";
+    private final String DRIVER_NAME= "/dev/sm9s5422_segment_js";
     SegmentThread segThread= new SegmentThread();
     boolean mThreadRun=false;
     public SevenSegment(){
@@ -43,10 +43,6 @@ public class SevenSegment {
         }
         return n;
     }
-    public void write(byte[]arr, int time){
-        for(int i=0; i<time; i++)
-            writeDriver(arr,6);
-    }
 
     public void updateBuffer(byte[] in){
         buffer=in;
@@ -67,8 +63,9 @@ public class SevenSegment {
         @Override
         public void run(){
             super.run();
+            Log.d("7-SEGMENT", "begin");
             byte[] toWrite = null;
-            int cnt=0, tempCnt;
+            int cnt=-1, tempCnt;
             while(mThreadRun){
                 try {
                     toWrite=buffer;
@@ -77,10 +74,11 @@ public class SevenSegment {
                         Thread.sleep(100);
                         continue;
                     }
+                    Log.d("7-SEGMENT", "msg print"+(char)toWrite[0]);
                     cnt = tempCnt;
                     toWrite=buffer.clone();
 
-                    write(toWrite,50);
+                    writeDriver(toWrite,6,20);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();

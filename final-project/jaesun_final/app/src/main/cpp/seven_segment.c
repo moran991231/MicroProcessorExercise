@@ -23,8 +23,12 @@ Java_com_mp_jaesun_1final_SevenSegment_closeDriver(JNIEnv *env, jobject thiz) {
 
 JNIEXPORT void JNICALL
 Java_com_mp_jaesun_1final_SevenSegment_writeDriver(JNIEnv *env, jobject thiz, jbyteArray arr,
-                                                   jint count) {
+                                                   jint count, jint time) {
     jbyte * chars = (*env)->GetByteArrayElements(env, arr,0);
-    if(fd>0) write(fd, (unsigned  char*) chars, count);
+    if(fd>0){
+        int i;
+        for(i=0; i<time; i++)
+            write(fd, (unsigned  char*) chars, count);
+    }
     (*env)->ReleaseByteArrayElements(env, arr, chars,0);
 }

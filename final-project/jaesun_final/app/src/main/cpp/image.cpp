@@ -35,6 +35,7 @@ int get_ready_bitmap(JNIEnv *env, jobject bitmap, AndroidBitmapInfo *info, unsig
 void read_kernel_file(const char* kernel_file_name, size_t *kernel_file_size, char **kernel_file_buffer);
 int release_bitmap(JNIEnv *env, jobject bitmap, unsigned char *tempPixels);
 size_t calc_global_size(int total_size, int local_size);
+unsigned char* get_uchar_array(JNIEnv*env, jbyteArray ranges);
 
 extern "C"
 JNIEXPORT jint JNICALL
@@ -87,7 +88,60 @@ Java_com_mp_jaesun_1final_MyBitmap_rgb2hsv(JNIEnv *env, jobject thiz, jobject bi
     release_bitmap(env, bitmap, orig_img);
     return 0;
 }
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_mp_jaesun_1final_MyBitmap_inRange(JNIEnv *env, jobject thiz, jobject bitmap,
+                                           jbyteArray ranges) {
+    // translate input arguments (bitmap, ranges)
+    unsigned char* color_range = get_uchar_array(env, ranges);
+    AndroidBitmapInfo info;
+    unsigned char *ret_img, *orig_img;
+    const char *kernel_name = "kernel_in_range";
+    const char* kernel_file_name = "/data/local/tmp/image.cl";
+    size_t kernel_file_size;
+    char *kernel_file_buffer;
+    int ret;
+    ret = get_ready_bitmap(env, bitmap, &info, &orig_img, &ret_img);
+    if(ret<0) return -1;
 
+    int pixelsCount = info.height * info.width;
+    memcpy(orig_img, ret_img, sizeof(uint32_t) * pixelsCount);
+
+    /////// gpu code begin
+    cl_mem d_src, d_dst;
+    cl_platform_id cpPlatform; // OpenCL platform
+    cl_device_id device_id;    // device ID
+    cl_context context;        // context
+    cl_command_queue queue;    // command queue
+    cl_program program;        // program
+    cl_kernel kernel;          // kernel
+
+    LOGD("gpu: cl file reading");
+    read_kernel_file(kernel_file_name,&kernel_file_size, &kernel_file_buffer);
+
+    size_t globalSize = calc_global_size(pixelsCount,LOCAL_SIZE);
+    // get ready to launch kernel
+    LOGD("gpu: getting ready to use kernel");
+    opencl_infra_creation(context, cpPlatform, device_id, queue, program, kernel,
+                          kernel_file_buffer,kernel_file_size, kernel_name);
+    // launch kernel
+    LOGD("gpu: launch the kernel");
+    launch_the_kernel(context, queue, kernel, globalSize, LOCAL_SIZE, info, d_src, d_dst, orig_img,
+                      ret_img);
+    // release
+    LOGD("gpu: release resources");
+    checkCL(clReleaseMemObject(d_src));
+    checkCL(clReleaseMemObject(d_dst));
+    checkCL(clReleaseProgram(program));
+    checkCL(clReleaseKernel(kernel));
+    checkCL(clReleaseCommandQueue(queue));
+    checkCL(clReleaseContext(context));
+    ////// gpu code ends
+
+    release_bitmap(env, bitmap, orig_img);
+    free(color_range);
+    return 0;
+}
 
 void read_kernel_file(const char* kernel_file_name, size_t *kernel_file_size, char **kernel_file_buffer) {
     FILE *file_handle = fopen(kernel_file_name, "r");
@@ -219,57 +273,4 @@ unsigned char* get_uchar_array(JNIEnv*env, jbyteArray ranges){
     return ret;
 }
 
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_mp_jaesun_1final_MyBitmap_inRange(JNIEnv *env, jobject thiz, jobject bitmap,
-                                           jbyteArray ranges) {
-    // translate input arguments (bitmap, ranges)
-    unsigned char* color_range = get_uchar_array(env, ranges);
-    AndroidBitmapInfo info;
-    unsigned char *ret_img, *orig_img;
-    const char *kernel_name = "kernel_in_range";
-    const char* kernel_file_name = "/data/local/tmp/image.cl";
-    size_t kernel_file_size;
-    char *kernel_file_buffer;
-    int ret;
-    ret = get_ready_bitmap(env, bitmap, &info, &orig_img, &ret_img);
-    if(ret<0) return -1;
 
-    int pixelsCount = info.height * info.width;
-    memcpy(orig_img, ret_img, sizeof(uint32_t) * pixelsCount);
-
-    /////// gpu code begin
-    cl_mem d_src, d_dst;
-    cl_platform_id cpPlatform; // OpenCL platform
-    cl_device_id device_id;    // device ID
-    cl_context context;        // context
-    cl_command_queue queue;    // command queue
-    cl_program program;        // program
-    cl_kernel kernel;          // kernel
-
-    LOGD("gpu: cl file reading");
-    read_kernel_file(kernel_file_name,&kernel_file_size, &kernel_file_buffer);
-
-    size_t globalSize = calc_global_size(pixelsCount,LOCAL_SIZE);
-    // get ready to launch kernel
-    LOGD("gpu: getting ready to use kernel");
-    opencl_infra_creation(context, cpPlatform, device_id, queue, program, kernel,
-                          kernel_file_buffer,kernel_file_size, kernel_name);
-    // launch kernel
-    LOGD("gpu: launch the kernel");
-    launch_the_kernel(context, queue, kernel, globalSize, LOCAL_SIZE, info, d_src, d_dst, orig_img,
-                      ret_img);
-    // release
-    LOGD("gpu: release resources");
-    checkCL(clReleaseMemObject(d_src));
-    checkCL(clReleaseMemObject(d_dst));
-    checkCL(clReleaseProgram(program));
-    checkCL(clReleaseKernel(kernel));
-    checkCL(clReleaseCommandQueue(queue));
-    checkCL(clReleaseContext(context));
-    ////// gpu code ends
-
-    release_bitmap(env, bitmap, orig_img);
-    free(color_range);
-    return 0;
-}

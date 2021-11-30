@@ -27,8 +27,8 @@ public class GpioButton {
     }
 
     // methods
-    public int open() {
-        if (mConnectFlag) return 1;
+    public void open() {
+        if (mConnectFlag) return ;
         fd = BoardIO.open(DRIVER_NAME, BoardIO.O_RDONLY);
         if (fd > 0) {
             mConnectFlag = true;
@@ -37,7 +37,6 @@ public class GpioButton {
         } else {
             fd=-1;
         }
-        return fd;
     }
 
     public void close() {

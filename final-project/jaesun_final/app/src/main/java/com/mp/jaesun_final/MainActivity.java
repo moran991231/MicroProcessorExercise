@@ -70,4 +70,12 @@ public class MainActivity extends AppCompatActivity {
         sevenseg.close();
         super.onPause();
     }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        gpioBtn.open();
+        led.open();
+        sevenseg.open();
+    }
 }

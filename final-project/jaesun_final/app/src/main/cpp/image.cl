@@ -43,7 +43,7 @@ __kernel void kernel_rgb2hsv(__global unsigned char *src, __global unsigned char
     dst[pix + 1] = (unsigned char)(sat * 255.0);
     dst[pix + 2] = (unsigned char)(val * 255.0);
 }
-
+/*
 __kernel void kernel_in_range(__global unsigned char *src, __global unsigned char *dst, const int w,
                              const int h, unsigned char* th) {
 
@@ -64,3 +64,4 @@ __kernel void kernel_in_range(__global unsigned char *src, __global unsigned cha
     dst[pix+0] = dst[pix+1] = dst[pix+2] = flag;
 
 }
+*/

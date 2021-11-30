@@ -31,7 +31,15 @@
     <FrameLayout
         android:id="@+id/camPreview"
         android:layout_width="800px"
-        android:layout_height="480px" />
+        android:layout_height="480px" >
+
+        <ImageView
+            android:layout_width="80px"
+            android:layout_height="80px"
+            android:layout_gravity="center"
+            android:background="@drawable/square"
+            />
+    </FrameLayout>
 
     <ImageView
         android:id="@+id/capturedView"

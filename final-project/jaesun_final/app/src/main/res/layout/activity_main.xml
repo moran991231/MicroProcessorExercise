@@ -20,6 +20,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="led" />
+    <Button
+        android:id="@+id/btnCapture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="capture" />
 </LinearLayout>
 
 
@@ -29,6 +34,7 @@
         android:layout_height="480px" />
 
     <ImageView
+        android:id="@+id/capturedView"
         android:layout_width="800px"
         android:layout_height="480px" />
 

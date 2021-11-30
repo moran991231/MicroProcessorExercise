@@ -3,11 +3,13 @@ package com.mp.jaesun_final;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
+import android.media.Image;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
     GpioButton gpioBtn;
@@ -15,12 +17,14 @@ public class MainActivity extends AppCompatActivity {
     SevenSegment sevenseg;
     FrameLayout camPreview;
     MyCamera mycam;
+    ImageView capturedView;
     int a = 0, b = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        capturedView = (ImageView)findViewById(R.id.capturedView);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -28,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
         gpioBtn = new GpioButton();
         led = new Led();
         sevenseg = new SevenSegment();
+
+        camPreview = (FrameLayout) findViewById(R.id.camPreview);
+        mycam = new MyCamera(this);
+        mycam.open(this);
 
         Button btn = (Button) findViewById(R.id.btnSeg);
         btn.setOnClickListener(v -> {
@@ -47,9 +55,10 @@ public class MainActivity extends AppCompatActivity {
             if (b > 8) b = 0;
         });
 
-        camPreview = (FrameLayout) findViewById(R.id.camPreview);
-        mycam = new MyCamera();
-        mycam.open(this);
+        btn = (Button) findViewById(R.id.btnCapture);
+        btn.setOnClickListener(v->{
+            mycam.takePicture();
+        });
 
 
     }

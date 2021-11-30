@@ -8,4 +8,5 @@ public class MyBitmap {
     }
     public native int rgb2hsv(Bitmap bitmap);
     public native int inRange(Bitmap bitmap, byte[] ranges);
+
 }

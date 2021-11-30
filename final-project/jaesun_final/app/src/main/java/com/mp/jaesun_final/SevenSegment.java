@@ -3,16 +3,16 @@ package com.mp.jaesun_final;
 import android.util.Log;
 
 public class SevenSegment {
-    static {
-        System.loadLibrary("segment");
-    }
-    private native int openDriver(String path);
-    private native void closeDriver();
-    private native void writeDriver(byte[] arr, int count, int time);
+//    static {
+//        System.loadLibrary("segment");
+//    }
+//    private native int openDriver(String path);
+//    private native void closeDriver();
+//    private native void writeDriver(byte[] arr, int count, int time);
 
 
     public static final byte[] GOOD__={'G','O','O','D','_','_'}, BAD___ ={'B','A','D','_','_','_'}, EMPTY={'_','_','_','_','_','_'};
-
+    private int fd;
     private byte[] buffer=EMPTY;
     private int updateCount=0;
     private final String DRIVER_NAME= "/dev/sm9s5422_segment_js";
@@ -22,8 +22,8 @@ public class SevenSegment {
         open();
     }
     public void open(){
-        int ret =  openDriver(DRIVER_NAME);
-        if(ret<0){
+        fd =  BoardIO.open(DRIVER_NAME, BoardIO.O_WRONLY);
+        if(fd<0){
             Log.d("7-SEGMENT", "Failed to open 7-segment drive");
             return;
         }
@@ -32,7 +32,7 @@ public class SevenSegment {
     }
     public void close(){
         makeThreadTerminated();
-        closeDriver();
+        BoardIO.close(fd);
     }
     public byte[] num2bytes(int num){
         byte[] n = new byte[6];
@@ -78,7 +78,7 @@ public class SevenSegment {
                     cnt = tempCnt;
                     toWrite=buffer.clone();
 
-                    writeDriver(toWrite,6,20);
+                    BoardIO.write(fd,toWrite,6,20);
 
                 } catch (InterruptedException e) {
                     e.printStackTrace();

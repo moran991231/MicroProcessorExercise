@@ -5,41 +5,44 @@ import android.widget.Toast;
 
 public class GpioButton {
     // native library
-    static {  System.loadLibrary("gpio_button"); }
-    public native int openDriver(String path);
-
-    public native void closeDriver();
-
-    public native int getInterrupt();
+//    static {  System.loadLibrary("gpio_button"); }
+//    public native int openDriver(String path);
+//
+//    public native void closeDriver();
+//
+//    public native int getInterrupt();
 
     // fields
-    private final String DRIVER_NAME="/dev/sm9s5422_interrupt";
+    private int fd;
+    private final String DRIVER_NAME = "/dev/sm9s5422_interrupt";
     public TranseThread mTranseThread;
 
-    public static final int UP=1,DOWN=2,LEFT=3,RIGHT=4,CENTER=5;
-    public static final String[] directionCode ={"none", "UP","DOWN", "LEFT","RIGHT","CENTER"};
-    public int direction=0;
+    public static final int UP = 1, DOWN = 2, LEFT = 3, RIGHT = 4, CENTER = 5;
+    public static final String[] directionCode = {"none", "UP", "DOWN", "LEFT", "RIGHT", "CENTER"};
+    public int direction = 0;
     private boolean mConnectFlag = false;
 
-    public GpioButton(){
+    public GpioButton() {
         open();
     }
+
     // methods
     public int open() {
         if (mConnectFlag) return 1;
-        if (openDriver(DRIVER_NAME) > 0) {
+        fd = BoardIO.open(DRIVER_NAME, BoardIO.O_RDONLY);
+        if (fd > 0) {
             mConnectFlag = true;
             mTranseThread = new TranseThread();
             mTranseThread.start();
-            return 1;
         } else {
-            return -1;
+            fd=-1;
         }
+        return fd;
     }
 
     public void close() {
         mConnectFlag = false;
-        closeDriver();
+        BoardIO.close(fd);
     }
 
     protected void finalize() throws Throwable {
@@ -56,9 +59,9 @@ public class GpioButton {
             try {
                 while (mConnectFlag) {
                     try {
-                        direction = getInterrupt();
+                        direction = BoardIO.getInterrupt(fd);
                         String code = directionCode[direction];
-                        Log.d("GPIO_BUTTON","The button code is "+code);
+                        Log.d("GPIO_BUTTON", "The button code is " + code);
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -67,7 +70,7 @@ public class GpioButton {
             } catch (Exception e) {
             }
 
-            Log.d("GPIO_BUTTON","Gpio Button thread ends");
+            Log.d("GPIO_BUTTON", "Gpio Button thread ends");
         }
     }
 

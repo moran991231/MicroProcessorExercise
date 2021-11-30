@@ -42,26 +42,27 @@ public class MyBitmap {
     }
     public byte[] getHsvRange(Bitmap img){ // cropped img
         final int MARGIN = 12;
+        final int MASK = 0x00_00_00_FF;
         rgb2hsv(img);
         int[] ranges = {255,-255,255,-255,255,-255};
         int w = img.getWidth(), h = img.getHeight();
         Log.d("BITMAP",String.format("cropped image size: %d x %d",w,h));
-        ByteBuffer buffer= ByteBuffer.allocate(img.getByteCount()); //바이트 버퍼를 이미지 사이즈 만큼 선언
-        img.copyPixelsToBuffer(buffer);//비트맵의 픽셀을 버퍼에 저장
+        ByteBuffer buffer= ByteBuffer.allocate(img.getByteCount());
+        img.copyPixelsToBuffer(buffer);
 
         byte[] pixels = buffer.array();
         Log.d("BITMAP",String.format("pixels length: %d",pixels.length));
 
         for(int i=0; i<w*h*4; i+=4){
             //h
-            ranges[0] = Math.min(ranges[0], pixels[i+0]+128);
-            ranges[1] = Math.max(ranges[1], pixels[i+0]+128);
+            ranges[0] = Math.min(ranges[0], (int)pixels[i+0]&MASK);
+            ranges[1] = Math.max(ranges[1], (int)pixels[i+0]&MASK);
             //s
-            ranges[2] = Math.min(ranges[2], pixels[i+1]+128);
-            ranges[3] = Math.max(ranges[3], pixels[i+1]+128);
+            ranges[2] = Math.min(ranges[2], (int)pixels[i+1]&MASK);
+            ranges[3] = Math.max(ranges[3], (int)pixels[i+1]&MASK);
             //v
-            ranges[4] = Math.min(ranges[4], pixels[i+2]+128);
-            ranges[5] = Math.max(ranges[5], pixels[i+2]+128);
+            ranges[4] = Math.min(ranges[4], (int)pixels[i+2]&MASK);
+            ranges[5] = Math.max(ranges[5], (int)pixels[i+2]&MASK);
         }
         Log.d("BITMAP","min max"+ arr2str(ranges));
 
@@ -76,7 +77,7 @@ public class MyBitmap {
 
         byte[] ret = new byte[6];
         for(int i=0; i<6; i++)
-            ret[i] = (byte) (ranges[i]-128);
+            ret[i] = (byte) (ranges[i]&MASK);
         Log.d("BITMAP", arr2str(ret));
         return ret;
     }
@@ -93,7 +94,7 @@ public class MyBitmap {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         for(byte x:arr)
-            sb.append(x).append(' ');
+            sb.append((int)x&0xFF).append(' ');
         sb.append(']');
         return sb.toString();
     }

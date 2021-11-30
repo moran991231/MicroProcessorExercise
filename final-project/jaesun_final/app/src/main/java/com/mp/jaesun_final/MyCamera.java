@@ -38,6 +38,7 @@ public class MyCamera {
 
     public void close() {
         if (camera == null) return;
+        imgView.removeViewAt(0);
         preview.pause();
         camera.release();
         camera = null;

@@ -60,7 +60,7 @@ public class MyCamera {
             MyBitmap myBitmap = new MyBitmap();
             Bitmap img = myBitmap.getImage(data);
             img = myBitmap.getCrop(img);
-            myBitmap.getHsvRange(img);
+//            myBitmap.getHsvRange(img);
             capturedView.setImageBitmap(img);
             camera.startPreview();
         }
@@ -96,12 +96,8 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
 //            cam.setPreviewDisplay(mHolder);
 
             Camera.Parameters params = cam.getParameters();
-//            List<Camera.Size> list = params.getSupportedPictureSizes();
-//            for (Camera.Size size : list) {
-//                Log.d("CAMERA", String.format("picture sizes; %d x %d", size.width, size.height));
-//            }
-            params.setPictureSize(800, 480);
-//            params.setPreviewSize(800, 480);
+            params.setPictureSize(800, 600);
+            params.setPreviewSize(800, 600);
             cam.setParameters(params);
 //            cam.startPreview();
         } catch (Exception e) {

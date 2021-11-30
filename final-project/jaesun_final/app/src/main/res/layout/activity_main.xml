@@ -31,7 +31,7 @@
     <FrameLayout
         android:id="@+id/camPreview"
         android:layout_width="800px"
-        android:layout_height="480px" >
+        android:layout_height="600px" >
 
         <ImageView
             android:layout_width="80px"
@@ -44,6 +44,6 @@
     <ImageView
         android:id="@+id/capturedView"
         android:layout_width="800px"
-        android:layout_height="480px" />
+        android:layout_height="200px" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

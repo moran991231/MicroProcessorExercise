@@ -35,7 +35,7 @@ public class MyBitmap {
     }
 
     public Bitmap getCrop(Bitmap img){
-        final int x=360, y=200+60, miniW=80, miniH=80;
+        final int x=360, y=260, miniW=80, miniH=80;
         Bitmap crop = Bitmap.createBitmap(img,x,y,miniW, miniH);
         rgb2hsv(crop);
         return crop;

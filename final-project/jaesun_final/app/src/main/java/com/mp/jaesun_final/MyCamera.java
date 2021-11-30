@@ -59,6 +59,7 @@ public class MyCamera {
             MyBitmap myBitmap = new MyBitmap();
             Bitmap img = myBitmap.getImage(data);
             img = myBitmap.getCrop(img);
+            myBitmap.getHsvRange(img);
             capturedView.setImageBitmap(img);
             camera.startPreview();
         }

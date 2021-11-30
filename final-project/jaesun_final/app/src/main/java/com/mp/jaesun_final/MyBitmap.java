@@ -7,6 +7,8 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 import java.lang.reflect.Array;
+import java.nio.Buffer;
+import java.nio.ByteBuffer;
 
 public class MyBitmap {
     static {
@@ -41,23 +43,27 @@ public class MyBitmap {
     public byte[] getHsvRange(Bitmap img){ // cropped img
         final int MARGIN = 12;
         rgb2hsv(img);
-        int[] ranges = new int[6];
+        int[] ranges = {255,-255,255,-255,255,-255};
         int w = img.getWidth(), h = img.getHeight();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        img.compress(Bitmap.CompressFormat.PNG,100, stream);
-        byte[] pixels= stream.toByteArray();
-        stream=null;
+        Log.d("BITMAP",String.format("cropped image size: %d x %d",w,h));
+        ByteBuffer buffer= ByteBuffer.allocate(img.getByteCount()); //바이트 버퍼를 이미지 사이즈 만큼 선언
+        img.copyPixelsToBuffer(buffer);//비트맵의 픽셀을 버퍼에 저장
+
+        byte[] pixels = buffer.array();
+        Log.d("BITMAP",String.format("pixels length: %d",pixels.length));
+
         for(int i=0; i<w*h*4; i+=4){
             //h
-            ranges[0] = Math.min(ranges[0], pixels[i+0]);
-            ranges[1] = Math.max(ranges[1], pixels[i+0]);
+            ranges[0] = Math.min(ranges[0], pixels[i+0]+128);
+            ranges[1] = Math.max(ranges[1], pixels[i+0]+128);
             //s
-            ranges[2] = Math.min(ranges[2], pixels[i+1]);
-            ranges[3] = Math.max(ranges[3], pixels[i+1]);
+            ranges[2] = Math.min(ranges[2], pixels[i+1]+128);
+            ranges[3] = Math.max(ranges[3], pixels[i+1]+128);
             //v
-            ranges[4] = Math.min(ranges[4], pixels[i+2]);
-            ranges[5] = Math.max(ranges[5], pixels[i+2]);
+            ranges[4] = Math.min(ranges[4], pixels[i+2]+128);
+            ranges[5] = Math.max(ranges[5], pixels[i+2]+128);
         }
+        Log.d("BITMAP","min max"+ arr2str(ranges));
 
         ranges[0] = (ranges[0]-MARGIN<0)? ranges[0]-MARGIN+255: ranges[0]-MARGIN;
         ranges[1] = (ranges[1]+MARGIN>255)? ranges[1]+MARGIN-255:ranges[1]+MARGIN;
@@ -70,8 +76,8 @@ public class MyBitmap {
 
         byte[] ret = new byte[6];
         for(int i=0; i<6; i++)
-            ret[i] = (byte) ranges[i];
-        Log.d("BITMAP", arr2str(ranges));
+            ret[i] = (byte) (ranges[i]-128);
+        Log.d("BITMAP", arr2str(ret));
         return ret;
     }
 
@@ -79,6 +85,14 @@ public class MyBitmap {
         StringBuilder sb = new StringBuilder();
         sb.append('[');
         for(int x:arr)
+            sb.append(x).append(' ');
+        sb.append(']');
+        return sb.toString();
+    }
+    public String arr2str(byte[] arr){
+        StringBuilder sb = new StringBuilder();
+        sb.append('[');
+        for(byte x:arr)
             sb.append(x).append(' ');
         sb.append(']');
         return sb.toString();

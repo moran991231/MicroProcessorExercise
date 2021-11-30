@@ -11,7 +11,7 @@ public class SevenSegment {
     private native void writeDriver(byte[] arr, int count, int time);
 
 
-    public static final byte[] GOOD__={71,'O','O','D','_','_'}, BAD___ ={'B','A','D','_','_','_'}, EMPTY={'_','_','_','_','_','_'};
+    public static final byte[] GOOD__={'G','O','O','D','_','_'}, BAD___ ={'B','A','D','_','_','_'}, EMPTY={'_','_','_','_','_','_'};
 
     private byte[] buffer=EMPTY;
     private int updateCount=0;

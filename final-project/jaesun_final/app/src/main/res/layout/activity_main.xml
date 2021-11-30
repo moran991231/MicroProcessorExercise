@@ -6,7 +6,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
     <Button
         android:id="@+id/btnSeg"
         android:layout_width="wrap_content"
@@ -18,5 +20,16 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="led" />
+</LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/camPreview"
+        android:layout_width="800px"
+        android:layout_height="480px" />
+
+    <ImageView
+        android:layout_width="800px"
+        android:layout_height="480px" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

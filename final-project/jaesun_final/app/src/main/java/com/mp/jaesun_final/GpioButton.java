@@ -1,6 +1,7 @@
 package com.mp.jaesun_final;
 
 import android.util.Log;
+import android.widget.Toast;
 
 public class GpioButton {
     // native library

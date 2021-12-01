@@ -4,14 +4,6 @@ import android.util.Log;
 import android.widget.Toast;
 
 public class GpioButton {
-    // native library
-//    static {  System.loadLibrary("gpio_button"); }
-//    public native int openDriver(String path);
-//
-//    public native void closeDriver();
-//
-//    public native int getInterrupt();
-
     // fields
     private int fd;
     private final String DRIVER_NAME = "/dev/sm9s5422_interrupt";

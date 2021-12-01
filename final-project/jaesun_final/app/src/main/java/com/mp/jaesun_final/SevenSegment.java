@@ -3,13 +3,6 @@ package com.mp.jaesun_final;
 import android.util.Log;
 
 public class SevenSegment {
-//    static {
-//        System.loadLibrary("segment");
-//    }
-//    private native int openDriver(String path);
-//    private native void closeDriver();
-//    private native void writeDriver(byte[] arr, int count, int time);
-
 
     public static final byte[] GOOD__={'G','O','O','D','_','_'}, BAD___ ={'B','A','D','_','_','_'}, EMPTY={'_','_','_','_','_','_'};
     private int fd;

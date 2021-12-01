@@ -3,14 +3,6 @@ package com.mp.jaesun_final;
 import android.util.Log;
 
 public class Led {
-    // native library
-//    static {
-//        System.loadLibrary("led");
-//    }
-//    private native int openDriver(String path);
-//    private native void closeDriver();
-//    private native int writeDriver(byte[]data, int length);
-
     // field
     private int fd;
     private final String DRIVER_NAME= "/dev/sm9s5422_led";

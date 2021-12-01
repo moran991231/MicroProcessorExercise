@@ -52,15 +52,20 @@ public class MyCamera {
             return null;
         }
     }
-
+    public int mode=0;
     Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             camera.stopPreview();
-            MyBitmap myBitmap = new MyBitmap();
-            Bitmap img = myBitmap.getImage(data);
-            img = myBitmap.getCrop(img);
-//            myBitmap.getHsvRange(img);
+            Bitmap img = MyBitmap.getImage(data);
+            if(MyBitmap.redRange==null||mode==0){
+                img = MyBitmap.getCrop(img);
+                byte[] redRange = MyBitmap.getHsvRange(img);
+                MyBitmap.redRange = redRange;
+            }else{
+                MyBitmap.rgb2hsv(img);
+                MyBitmap.inRange(img, MyBitmap.redRange);
+            }
             capturedView.setImageBitmap(img);
             camera.startPreview();
         }

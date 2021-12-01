@@ -57,7 +57,15 @@ public class MainActivity extends AppCompatActivity {
 
         btn = (Button) findViewById(R.id.btnCapture);
         btn.setOnClickListener(v->{
+            mycam.mode=0;
             mycam.takePicture();
+        });
+
+        btn = (Button) findViewById(R.id.btnThresh);
+        btn.setOnClickListener(v->{
+            mycam.mode=1;
+            mycam.takePicture();
+
         });
 
 

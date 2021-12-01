@@ -25,6 +25,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="capture" />
+    <Button
+        android:id="@+id/btnThresh"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="threshold" />
 </LinearLayout>
 
 
@@ -44,6 +49,6 @@
     <ImageView
         android:id="@+id/capturedView"
         android:layout_width="800px"
-        android:layout_height="200px" />
+        android:layout_height="300px" />
 
 </androidx.appcompat.widget.LinearLayoutCompat>

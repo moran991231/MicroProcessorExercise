@@ -29,7 +29,7 @@ int opencl_infra_creation(cl_context &context, cl_platform_id &cpPlatform, cl_de
 
 int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &kernel,
                       size_t globalSize, size_t localSize, AndroidBitmapInfo &info, cl_mem &d_src,
-                      cl_mem &d_dst, unsigned char *image, unsigned char *ret_img);
+                      cl_mem &d_dst,cl_mem &d_th, unsigned char *image, unsigned char *ret_img, unsigned char* th) ;
 int get_ready_bitmap(JNIEnv *env, jobject bitmap, AndroidBitmapInfo *info, unsigned char **tempPixels,
                  unsigned char **src) ;
 void read_kernel_file(const char* kernel_file_name, size_t *kernel_file_size, char **kernel_file_buffer);
@@ -44,7 +44,7 @@ Java_com_mp_jaesun_1final_MyBitmap_rgb2hsv(JNIEnv *env, jobject thiz, jobject bi
     AndroidBitmapInfo info;
     unsigned char *ret_img, *orig_img;
     const char *kernel_name = "kernel_rgb2hsv";
-    const char* kernel_file_name = "/data/local/tmp/image.cl";
+    const char* kernel_file_name = "/data/local/tmp/hsv.c";
     size_t kernel_file_size;
     char *kernel_file_buffer;
     int ret;
@@ -73,8 +73,9 @@ Java_com_mp_jaesun_1final_MyBitmap_rgb2hsv(JNIEnv *env, jobject thiz, jobject bi
                           kernel_file_buffer,kernel_file_size, kernel_name);
     // launch kernel
     LOGD("gpu: launch the kernel");
-    launch_the_kernel(context, queue, kernel, globalSize, LOCAL_SIZE, info, d_src, d_dst, orig_img,
-                      ret_img);
+    cl_mem x;
+    launch_the_kernel(context, queue, kernel, globalSize, LOCAL_SIZE, info, d_src, d_dst,x, orig_img,
+                      ret_img,NULL);
     // release
     LOGD("gpu: release resources");
     checkCL(clReleaseMemObject(d_src));
@@ -93,11 +94,14 @@ JNIEXPORT jint JNICALL
 Java_com_mp_jaesun_1final_MyBitmap_inRange(JNIEnv *env, jobject thiz, jobject bitmap,
                                            jbyteArray ranges) {
     // translate input arguments (bitmap, ranges)
-    unsigned char* color_range = get_uchar_array(env, ranges);
+    unsigned char color_range[6]={0};
+    jbyte *rawBytes = (*env).GetByteArrayElements(ranges,NULL);
+    memcpy(color_range,rawBytes,sizeof(color_range));
+    (*env).ReleaseByteArrayElements(ranges,rawBytes,0);
     AndroidBitmapInfo info;
     unsigned char *ret_img, *orig_img;
-    const char *kernel_name = "kernel_in_range";
-    const char* kernel_file_name = "/data/local/tmp/image.cl";
+    const char *kernel_name = "kernel_in_range_";
+    const char* kernel_file_name = "/data/local/tmp/threshold.c";
     size_t kernel_file_size;
     char *kernel_file_buffer;
     int ret;
@@ -108,7 +112,7 @@ Java_com_mp_jaesun_1final_MyBitmap_inRange(JNIEnv *env, jobject thiz, jobject bi
     memcpy(orig_img, ret_img, sizeof(uint32_t) * pixelsCount);
 
     /////// gpu code begin
-    cl_mem d_src, d_dst;
+    cl_mem d_src, d_dst, d_th;
     cl_platform_id cpPlatform; // OpenCL platform
     cl_device_id device_id;    // device ID
     cl_context context;        // context
@@ -126,8 +130,8 @@ Java_com_mp_jaesun_1final_MyBitmap_inRange(JNIEnv *env, jobject thiz, jobject bi
                           kernel_file_buffer,kernel_file_size, kernel_name);
     // launch kernel
     LOGD("gpu: launch the kernel");
-    launch_the_kernel(context, queue, kernel, globalSize, LOCAL_SIZE, info, d_src, d_dst, orig_img,
-                      ret_img);
+    launch_the_kernel(context, queue, kernel, globalSize, LOCAL_SIZE, info, d_src, d_dst,d_th, orig_img,
+                      ret_img,color_range);
     // release
     LOGD("gpu: release resources");
     checkCL(clReleaseMemObject(d_src));
@@ -224,7 +228,7 @@ int opencl_infra_creation(cl_context &context, cl_platform_id &cpPlatform, cl_de
 
 int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &kernel,
                       size_t globalSize, size_t localSize, AndroidBitmapInfo &info, cl_mem &d_src,
-                      cl_mem &d_dst, unsigned char *image, unsigned char *ret_img) {
+                      cl_mem &d_dst,cl_mem &d_th, unsigned char *image, unsigned char *ret_img, unsigned char* th) {
     cl_int err;
     size_t img_size = info.height * info.width * 4;
     // Create the input and output arrays in device memory for our calculation
@@ -237,6 +241,7 @@ int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &k
     checkCL(clEnqueueWriteBuffer(queue, d_src, CL_TRUE, 0, img_size, image, 0, NULL,
                                  NULL));
 
+
     // Set the arguments to our compute kernel
     checkCL(clSetKernelArg(kernel, 0, sizeof(cl_mem), &d_src));
     checkCL(clSetKernelArg(kernel, 1, sizeof(cl_mem), &d_dst));
@@ -244,6 +249,12 @@ int launch_the_kernel(cl_context &context, cl_command_queue &queue, cl_kernel &k
     checkCL(clSetKernelArg(kernel, 3, sizeof(int), &(info.height)));
 
 
+    if(th!=NULL){
+        d_th = clCreateBuffer(context,CL_MEM_READ_ONLY, 6,NULL, &err);
+        checkCL(err);
+        checkCL(clEnqueueWriteBuffer(queue,d_th,CL_TRUE,0,6,th,0,NULL,NULL));
+        checkCL(clSetKernelArg(kernel,4,sizeof(cl_mem), &d_th));
+    }
     // Execute the kernel over the entire range of the data set
     checkCL(clEnqueueNDRangeKernel(queue, kernel, 1, NULL, &globalSize, &localSize, 0, NULL, NULL));
     // Wait for the command queue to get serviced before reading back results

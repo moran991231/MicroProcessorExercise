@@ -23,6 +23,10 @@ public class SevenSegment {
     public void close(){
         BoardIO.close(fd);
     }
+
+    public void write(byte[]arr, int time){
+        BoardIO.write(fd,arr,6,time);
+    }
     public byte[] num2bytes(int num){
         byte[] n = new byte[6];
 
@@ -32,7 +36,5 @@ public class SevenSegment {
         }
         return n;
     }
-    public void write(byte[]arr, int time){
-        BoardIO.write(fd,arr,6,time);
-    }
+
 }

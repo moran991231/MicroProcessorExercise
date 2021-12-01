@@ -13,9 +13,11 @@ public class GpioButton {
     public static final String[] directionCode = {"none", "UP", "DOWN", "LEFT", "RIGHT", "CENTER"};
     public int direction = 0;
     private boolean mConnectFlag = false;
+    DoGpioButtonClicked afterClicked=null;
 
-    public GpioButton() {
+    public GpioButton(DoGpioButtonClicked content) {
         open();
+        afterClicked=content;
     }
 
     // methods
@@ -41,7 +43,6 @@ public class GpioButton {
         super.finalize();
     }
 
-
     // nested class
     private class TranseThread extends Thread {
         @Override
@@ -52,6 +53,7 @@ public class GpioButton {
                     direction = BoardIO.getInterrupt(fd);
                     String code = directionCode[direction];
                     Log.d("GPIO_BUTTON", "The button code is " + code);
+                    afterClicked.doThis(direction);
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();

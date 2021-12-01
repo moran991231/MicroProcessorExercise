@@ -1,15 +1,19 @@
 package com.mp.jaesun_final;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Point;
 import android.media.Image;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.Display;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 
 public class MainActivity extends AppCompatActivity {
     GpioButton gpioBtn;
@@ -18,18 +22,41 @@ public class MainActivity extends AppCompatActivity {
     FrameLayout camPreview;
     MyCamera mycam;
     ImageView capturedView;
+    RatingBar diffLevel;
     int a = 0, b = 0;
+
+    Handler levelHandler = new Handler(){
+        @Override
+        public void handleMessage(@NonNull Message msg){
+            super.handleMessage(msg);
+            int level = (int)diffLevel.getRating()+msg.arg1;
+            if(1<=level && level<=8)
+                diffLevel.setRating(level);
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         capturedView = (ImageView)findViewById(R.id.capturedView);
+        diffLevel = (RatingBar)findViewById(R.id.rbLevel);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
         Log.d("MAIN", String.format("win size: %dx%d", size.x, size.y));
-        gpioBtn = new GpioButton();
+        gpioBtn = new GpioButton(new DoGpioButtonClicked() {
+            @Override
+            public void doThis(int directoin) {
+                Message msg = Message.obtain();
+                if(directoin == GpioButton.DOWN)
+                    msg.arg1=-1;
+                else if (directoin== GpioButton.UP)
+                    msg.arg1=1;
+                levelHandler.sendMessage(msg);
+
+            }
+        });
         led = new Led();
         sevenseg = new SevenSegment();
 
@@ -76,12 +103,14 @@ public class MainActivity extends AppCompatActivity {
         gpioBtn.close();
         led.close();
         sevenseg.close();
+        mycam.close();
         super.onPause();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        mycam.open(this);
         gpioBtn.open();
         led.open();
         sevenseg.open();

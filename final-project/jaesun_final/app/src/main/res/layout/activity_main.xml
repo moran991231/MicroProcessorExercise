@@ -51,4 +51,13 @@
         android:layout_width="800px"
         android:layout_height="300px" />
 
+    <RatingBar
+        android:id="@+id/rbLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="8"
+        android:stepSize="1"
+        android:rating="1"/>
+
 </androidx.appcompat.widget.LinearLayoutCompat>

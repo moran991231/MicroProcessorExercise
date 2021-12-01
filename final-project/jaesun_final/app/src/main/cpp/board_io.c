@@ -2,8 +2,11 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <jni.h>
+#include <android/log.h>
 
 
+#define LOG_TAG "MY_BOARD"
+#define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)
 JNIEXPORT jint JNICALL
 Java_com_mp_jaesun_1final_BoardIO_open(JNIEnv *env, jclass clazz, jstring path, jint option) {
     const char * path_utf = (*env)->GetStringUTFChars(env, path, NULL);
@@ -43,10 +46,12 @@ Java_com_mp_jaesun_1final_BoardIO_getInterrupt(JNIEnv *env, jclass clazz, jint f
 JNIEXPORT void JNICALL
 Java_com_mp_jaesun_1final_BoardIO_write(JNIEnv *env, jclass clazz, jint fd, jbyteArray arr,
                                         jint len, jint time) {
-    if(fd<0) return;
-    jbyte *chars = (*env)->GetByteArrayElements(env, arr, 0);
-    int i;
-    for(i=0; i<time; i++)
-        write(fd, (unsigned char *) chars, len);
+    jbyte *chars = (*env)->GetByteArrayElements(env,arr,0);
+
+    if(fd>0){
+        int i;
+        for(i=0; i<time; i++)
+            write(fd, (unsigned char *) chars, len);
+    }
     (*env)->ReleaseByteArrayElements(env, arr, chars, 0);
 }

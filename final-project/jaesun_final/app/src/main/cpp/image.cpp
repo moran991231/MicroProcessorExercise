@@ -7,7 +7,6 @@
 #include <string.h>
 #include <CL/opencl.h>
 #include <jni.h>
-#include <jni.h>
 
 #define LOG_TAG "MY_LOG"
 #define LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, LOG_TAG, __VA_ARGS__)

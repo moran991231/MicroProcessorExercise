@@ -39,13 +39,13 @@ public class MainActivity extends AppCompatActivity {
 
         Button btn = (Button) findViewById(R.id.btnSeg);
         btn.setOnClickListener(v -> {
-            if (a % 3 == 0)
-                sevenseg.updateBuffer(SevenSegment.GOOD__);
-            else if (a % 3 == 1)
-                sevenseg.updateBuffer(SevenSegment.BAD___);
-            else if (a % 3 == 2)
-                sevenseg.updateBuffer(new byte[]{0, 1, 2, 3, 4, 5});
-            a++;
+            if(a==0)
+                sevenseg.write(SevenSegment.GOOD__,20);
+            else if (a==1)
+                sevenseg.write(SevenSegment.BAD___,20);
+            else
+                sevenseg.write(new byte[]{0, 1, 2, 3, 4, 5},20);
+            a = (a+1)%3;
         });
 
         btn = (Button) findViewById(R.id.btnLed);

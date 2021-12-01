@@ -47,18 +47,15 @@ public class GpioButton {
         @Override
         public void run() {
             super.run();
-            try {
-                while (mConnectFlag) {
-                    try {
-                        direction = BoardIO.getInterrupt(fd);
-                        String code = directionCode[direction];
-                        Log.d("GPIO_BUTTON", "The button code is " + code);
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+            while (mConnectFlag) {
+                try {
+                    direction = BoardIO.getInterrupt(fd);
+                    String code = directionCode[direction];
+                    Log.d("GPIO_BUTTON", "The button code is " + code);
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
             }
 
             Log.d("GPIO_BUTTON", "Gpio Button thread ends");

@@ -14,7 +14,8 @@ __kernel void kernel_in_range_(__global unsigned char *src, __global unsigned ch
         if(down<=up){
             if(!((down<=val) && (val<=up))) flag=0;
         }else{
-            if(!((val<=down) || (up<=val))) flag=0;
+
+            if(!(down<=val || val<=up)) flag=0;
         }
         if(flag==0) break;
     }

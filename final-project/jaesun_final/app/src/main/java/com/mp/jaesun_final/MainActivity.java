@@ -65,28 +65,35 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        btn = (Button) findViewById(R.id.btnDebug);
+        btn.setOnClickListener(v -> {
+            Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
+            startActivity(intent);
+
+        });
+
     }
 
-    private void makeBoardIOInstances(){
-        if(BoardIO.gpioBtn==null)
-        BoardIO.gpioBtn = new GpioButton(new DoGpioButtonClicked() {
-            @Override
-            public void doThis(int directoin) {
-                Message msg = Message.obtain();
-                if (directoin == GpioButton.DOWN) {
-                    msg.arg1 = -1;
-                    levelHandler.sendMessage(msg);
-                } else if (directoin == GpioButton.UP) {
-                    msg.arg1 = 1;
-                    levelHandler.sendMessage(msg);
-                } else if (directoin == GpioButton.CENTER) {
-                    playHandler.sendMessage(msg);
+    private void makeBoardIOInstances() {
+        if (BoardIO.gpioBtn == null)
+            BoardIO.gpioBtn = new GpioButton(new DoGpioButtonClicked() {
+                @Override
+                public void doThis(int directoin) {
+                    Message msg = Message.obtain();
+                    if (directoin == GpioButton.DOWN) {
+                        msg.arg1 = -1;
+                        levelHandler.sendMessage(msg);
+                    } else if (directoin == GpioButton.UP) {
+                        msg.arg1 = 1;
+                        levelHandler.sendMessage(msg);
+                    } else if (directoin == GpioButton.CENTER) {
+                        playHandler.sendMessage(msg);
+                    }
                 }
-            }
-        });
-        if(BoardIO.led==null)
+            });
+        if (BoardIO.led == null)
             BoardIO.led = new Led();
-        if(BoardIO.sevSeg==null)
+        if (BoardIO.sevSeg == null)
             BoardIO.sevSeg = new SevenSegment();
     }
 
@@ -100,18 +107,19 @@ public class MainActivity extends AppCompatActivity {
         BoardIO.led.writeStick(Player.level);
         BoardIO.sevSeg.open();
     }
+
     @Override
-    protected void onPause(){
-        BoardIO.gpioBtn.close();
-        BoardIO.led.close();
-        BoardIO.sevSeg.close();
+    protected void onPause() {
+//        BoardIO.gpioBtn.close();
+//        BoardIO.led.close();
+//        BoardIO.sevSeg.close();
         super.onPause();
 
     }
 
     @Override
     protected void onDestroy() {
-
+        BoardIO.led.writeStick(0);
         BoardIO.gpioBtn.close();
         BoardIO.led.close();
         BoardIO.sevSeg.close();

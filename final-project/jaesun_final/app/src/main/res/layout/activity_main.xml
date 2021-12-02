@@ -39,15 +39,10 @@
     android:layout_height="wrap_content">
 
     <Button
-        android:id="@+id/btnCapture"
+        android:id="@+id/btnDebug"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="capture" />
-    <Button
-        android:id="@+id/btnThresh"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="threshold" />
+        android:text="for debug" />
 </LinearLayout>
 
 

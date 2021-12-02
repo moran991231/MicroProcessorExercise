@@ -66,11 +66,11 @@ public class PlayActivity extends Activity {
                 MyBitmap.rgb2hsv(img); // hsv
                 Bitmap redTh = img, greenTh = img.copy(img.getConfig(),true);
                 MyBitmap.inRange(redTh, MyBitmap.redRange);
+                boolean redUp = MyBitmap.isUp(redTh);
                 redTh=img=null;
+                boolean greenUp = MyBitmap.isUp(greenTh);
                 MyBitmap.inRange(greenTh, MyBitmap.greenRange);
                 greenTh=null;
-                boolean redUp = MyBitmap.isUp(redTh);
-                boolean greenUp = MyBitmap.isUp(greenTh);
 
                 // UI processing ...
                 boolean isCorrect = qMaker.isCorrect(redUp,greenUp);
@@ -101,9 +101,9 @@ public class PlayActivity extends Activity {
 
     @Override
     protected void onDestroy() {
-        mycam.close();
         if(Player.p!=null)
             Player.p.gameFinish();
+        mycam.close();
         super.onDestroy();
     }
 
@@ -136,17 +136,14 @@ public class PlayActivity extends Activity {
                 }
             }
 
-
             Log.d("MY_PLAY_ACT", "game thread finished");
             Message msg = Message.obtain();
             msg.arg1=ret;
+            Player.p.gameFinish();
+
             finishHandler.sendMessage(msg);
         }
-
-
     }
-
-
 
 }
 

@@ -27,7 +27,7 @@ public class Player {
     public boolean getIsCorrect(){return isCorrect;}
 
     public static String makeScoreStr(){
-        return String.format("SCORE: %d");
+        return String.format("SCORE: %d",score);
     }
 
     public static String makeStageStr(){

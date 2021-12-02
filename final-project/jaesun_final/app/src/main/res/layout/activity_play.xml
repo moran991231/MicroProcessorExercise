@@ -9,14 +9,15 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="200px">
+
         <TextView
             android:id="@+id/tvQuest"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="question here"
-            android:textAlignment="center"
             android:background="#D9D1A9"
-             />
+            android:gravity="center_horizontal|center_vertical"
+            android:text="question here"
+            android:textAlignment="center" />
     </LinearLayout>
 
 
@@ -37,18 +38,14 @@
         android:id="@+id/tvAnswer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="    Answer: "
-        android:textAlignment="center"
-        />
+        android:textAlignment="center" />
 
 
     <TextView
         android:id="@+id/tvYourAnswer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="    Your Answer: "
-        android:textAlignment="center"
-        />
+        android:textAlignment="center" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -58,9 +55,8 @@
             android:id="@+id/tvScore"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="{stage} stage"
-            android:textAlignment="center"
-             />
+            android:text="SCORE: "
+            android:textAlignment="center" />
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -71,9 +67,8 @@
                 android:id="@+id/tvStage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="{score} / {NUM_SCORE}"
-                android:textAlignment="center"
-                 />
+                android:text="STAGE: "
+                android:textAlignment="center" />
 
         </LinearLayout>
 

@@ -5,7 +5,7 @@ import android.widget.Toast;
 
 public class GpioButton {
     // fields
-    private int fd;
+    private int fd=-1;
     private final String DRIVER_NAME = "/dev/sm9s5422_interrupt";
     public TranseThread mTranseThread;
 
@@ -22,7 +22,8 @@ public class GpioButton {
 
     // methods
     public void open() {
-        if (mConnectFlag) return ;
+        if(fd>0) return;
+        if (mConnectFlag) return;
         fd = BoardIO.open(DRIVER_NAME, BoardIO.O_RDONLY);
         if (fd > 0) {
             mConnectFlag = true;
@@ -35,7 +36,9 @@ public class GpioButton {
 
     public void close() {
         mConnectFlag = false;
+        mTranseThread.interrupt();
         BoardIO.close(fd);
+        fd=-1;
     }
 
     protected void finalize() throws Throwable {
@@ -52,11 +55,12 @@ public class GpioButton {
                 try {
                     direction = BoardIO.getInterrupt(fd);
                     String code = directionCode[direction];
-                    Log.d("GPIO_BUTTON", "The button code is " + code);
+                    Log.d("GPIO_BUTTON", "The button code is " + code+" id:"+this.getId());
+                    if(mConnectFlag==false) return;
                     afterClicked.doThis(direction);
                     Thread.sleep(100);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    break;
                 }
             }
 

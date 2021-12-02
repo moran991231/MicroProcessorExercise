@@ -5,7 +5,7 @@ import android.util.Log;
 public class SevenSegment {
 
     public static final byte[] GOOD__={'G','O','O','D','_','_'}, BAD___ ={'B','A','D','_','_','_'}, EMPTY={'_','_','_','_','_','_'};
-    private int fd;
+    private int fd=-1;
     private final String DRIVER_NAME= "/dev/sm9s5422_segment_js";
 
     public SevenSegment(){
@@ -13,6 +13,7 @@ public class SevenSegment {
     }
 
     public void open(){
+        if(fd>0) return;
         fd =  BoardIO.open(DRIVER_NAME, BoardIO.O_WRONLY);
 
         if(fd<0){
@@ -22,6 +23,7 @@ public class SevenSegment {
     }
     public void close(){
         BoardIO.close(fd);
+        fd=-1;
     }
 
     public void write(byte[]arr, int time){

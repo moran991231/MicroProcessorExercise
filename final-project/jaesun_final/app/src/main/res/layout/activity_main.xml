@@ -6,20 +6,38 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".MainActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnCaliShow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CALIBRATION" />
+
+        <Button
+            android:id="@+id/btnTestShow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TEST CALIB" />
+    </LinearLayout>
+
+    <RatingBar
+        android:id="@+id/rbLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:isIndicator="true"
+        android:numStars="8"
+        android:stepSize="1"
+        android:rating="1"/>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="   Press (Center) button to Start!"/>
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
-    <Button
-        android:id="@+id/btnSeg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="segment" />
 
-    <Button
-        android:id="@+id/btnLed"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="led" />
     <Button
         android:id="@+id/btnCapture"
         android:layout_width="wrap_content"
@@ -33,31 +51,5 @@
 </LinearLayout>
 
 
-    <FrameLayout
-        android:id="@+id/camPreview"
-        android:layout_width="800px"
-        android:layout_height="600px" >
-
-        <ImageView
-            android:layout_width="80px"
-            android:layout_height="80px"
-            android:layout_gravity="center"
-            android:background="@drawable/square"
-            />
-    </FrameLayout>
-
-    <ImageView
-        android:id="@+id/capturedView"
-        android:layout_width="800px"
-        android:layout_height="300px" />
-
-    <RatingBar
-        android:id="@+id/rbLevel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:isIndicator="true"
-        android:numStars="8"
-        android:stepSize="1"
-        android:rating="1"/>
 
 </androidx.appcompat.widget.LinearLayoutCompat>

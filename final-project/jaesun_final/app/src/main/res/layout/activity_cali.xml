@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".CaliActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:id="@+id/rgCali"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center">
+
+            <RadioButton
+                android:id="@+id/rbRed"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30px"
+                android:layout_marginRight="30px"
+                android:checked="true"
+                android:text="Red " />
+
+            <RadioButton
+                android:id="@+id/rbGreen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30px"
+                android:layout_marginRight="30px"
+                android:text="Green" />
+        </RadioGroup>
+
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/camPreviewCali"
+        android:layout_width="800px"
+        android:layout_height="600px" >
+
+        <ImageView
+            android:layout_width="80px"
+            android:layout_height="80px"
+            android:layout_gravity="center"
+            android:background="@drawable/square"
+            />
+    </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:id="@+id/btnCali"
+            android:layout_width="200px"
+            android:layout_height="match_parent"
+            android:text="cali"/>
+        <Button
+            android:id="@+id/btnThreshCali"
+            android:layout_width="200px"
+            android:layout_height="match_parent"
+            android:text="thresholding"/>
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/ivCali"
+        android:layout_width="580px"
+        android:layout_height="300px" />
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

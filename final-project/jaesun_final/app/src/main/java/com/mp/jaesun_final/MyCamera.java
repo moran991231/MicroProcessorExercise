@@ -11,6 +11,8 @@ import android.view.SurfaceView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import java.io.IOException;
 import java.util.List;
 
@@ -21,17 +23,18 @@ public class MyCamera {
     private FrameLayout imgView;
     private ImageView capturedView;
 
-    public MyCamera(MainActivity main) {
-        imgView = main.camPreview;
-        capturedView = main.capturedView;
+    public MyCamera(Context context, FrameLayout imgView, ImageView capturedView) {
+        this.imgView = imgView;
+        this.capturedView = capturedView;
+        open(context);
     }
 
-    public void open(MainActivity main) {
+
+    public void open(Context context) {
         if (camera != null) return;
         camera = getCameraInstance();
         camera.setDisplayOrientation(180);
-        preview = new CameraPreview(main, camera);
-//        imgView.removeAllViews();
+        preview = new CameraPreview(context, camera);
         imgView.addView(preview,0);
 
     }
@@ -53,21 +56,9 @@ public class MyCamera {
         }
     }
     public int mode=0;
-    Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
+    public Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
-            camera.stopPreview();
-            Bitmap img = MyBitmap.getImage(data);
-            if(MyBitmap.redRange==null||mode==0){
-                img = MyBitmap.getCrop(img);
-                byte[] redRange = MyBitmap.getHsvRange(img);
-                MyBitmap.redRange = redRange;
-            }else{
-                MyBitmap.rgb2hsv(img);
-                MyBitmap.inRange(img, MyBitmap.redRange);
-            }
-            capturedView.setImageBitmap(img);
-            camera.startPreview();
         }
     };
 
@@ -93,18 +84,15 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     }
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
+        if(cam==null) return;
         if (mHolder.getSurface() == null) {
             return;
         }
         try {
-//            cam.stopPreview();
-//            cam.setPreviewDisplay(mHolder);
-
             Camera.Parameters params = cam.getParameters();
             params.setPictureSize(800, 600);
             params.setPreviewSize(800, 600);
             cam.setParameters(params);
-//            cam.startPreview();
         } catch (Exception e) {
             e.printStackTrace();
             Log.d(VIEW_LOG_TAG, "Error starting camera preview ");

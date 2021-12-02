@@ -40,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "DO CALIB FIRST", Toast.LENGTH_SHORT).show();
                 return;
             }
+            if(PlayActivity.isOn) return;
             Toast.makeText(MainActivity.this, "GAME START", Toast.LENGTH_SHORT).show();
             Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
             startActivity(intent);

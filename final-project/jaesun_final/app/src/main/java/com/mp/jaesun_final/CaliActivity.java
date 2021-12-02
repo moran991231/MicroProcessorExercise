@@ -59,7 +59,8 @@ public class CaliActivity extends Activity {
                 switch(mode){
                     case SET_RANGE:
                         img = MyBitmap.getCrop(img);
-                         range = MyBitmap.getHsvRange(img);
+                        Bitmap tempImg = img.copy(img.getConfig(),true);
+                         range = MyBitmap.getHsvRange(tempImg);
                         if(isCaliForRed)
                             MyBitmap.redRange = range;
                         else

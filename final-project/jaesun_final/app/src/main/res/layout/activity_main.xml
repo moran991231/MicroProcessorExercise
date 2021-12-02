@@ -5,23 +5,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
-    <LinearLayout
+    tools:context=".MainActivity"
+    android:gravity="center">
+
+    <Button
+        android:id="@+id/btnCaliShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CALIBRATION" />
+
+    <Button
+        android:id="@+id/btnTestShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEST CALIB" />
+
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:id="@+id/btnCaliShow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="CALIBRATION" />
-
-        <Button
-            android:id="@+id/btnTestShow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="TEST CALIB" />
-    </LinearLayout>
-
+        android:layout_height="100px"
+        android:gravity="bottom|center_horizontal"
+        android:text="Control the level (1~8) by pressing Up/Down button" />
     <RatingBar
         android:id="@+id/rbLevel"
         android:layout_width="wrap_content"
@@ -30,10 +33,12 @@
         android:numStars="8"
         android:stepSize="1"
         android:rating="1"/>
+
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="   Press (Center) button to Start!"/>
+        android:text="GAME START by pressing Center button"
+        android:textAlignment="center" />
 <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -42,7 +47,8 @@
         android:id="@+id/btnDebug"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="for debug" />
+        android:text="for debug"
+        android:visibility="invisible"/>
 </LinearLayout>
 
 

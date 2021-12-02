@@ -5,10 +5,11 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:gravity="center"
     tools:context=".CaliActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="100px">
 
         <RadioGroup
             android:id="@+id/rgCali"
@@ -50,19 +51,32 @@
             android:background="@drawable/square"
             />
     </FrameLayout>
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Match your flag into the red square and click CALIBRATE button."
+        android:gravity="center"/>
+
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="100px"
+        android:gravity="center">
+
         <Button
             android:id="@+id/btnCali"
-            android:layout_width="200px"
+            android:layout_width="290px"
             android:layout_height="match_parent"
-            android:text="cali"/>
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            android:text="calibrate" />
+
         <Button
             android:id="@+id/btnThreshCali"
-            android:layout_width="200px"
+            android:layout_width="290px"
             android:layout_height="match_parent"
-            android:text="thresholding"/>
+            android:layout_marginLeft="30px"
+            android:layout_marginRight="30px"
+            android:text="thresholding" />
 
     </LinearLayout>
 

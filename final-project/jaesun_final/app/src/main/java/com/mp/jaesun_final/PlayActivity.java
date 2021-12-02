@@ -20,6 +20,7 @@ public class PlayActivity extends Activity {
 
     MyCamera mycam;
     Question qMaker = new Question();
+    SoundManager soundMana;
 
     Handler stageHandler = new Handler() {
         @Override
@@ -42,6 +43,7 @@ public class PlayActivity extends Activity {
     };
 
     private void showResult(){
+        soundMana.play(SoundManager.FINISH);
         setContentView(R.layout.activity_result);
         TextView tv = (TextView)    findViewById(R.id.tvScoreResult);
         tv.setText(Player.score+"");
@@ -97,6 +99,8 @@ public class PlayActivity extends Activity {
 
         camPreviewTest = (FrameLayout) findViewById(R.id.camPreviewTest);
 
+        soundMana = new SoundManager(this);
+
     }
 
     @Override
@@ -113,6 +117,7 @@ public class PlayActivity extends Activity {
             int ret = 1;
             Player.score=0;
             for (Player.stage = 1; Player.stage <= Player.NUM_STAGE; Player.stage++) {
+                soundMana.play(SoundManager.NEXT);
                 qMaker.make(Player.level);
                 stageHandler.sendMessage(Message.obtain());
                 try {
@@ -126,6 +131,7 @@ public class PlayActivity extends Activity {
                     sleep(1*60*1000); // 1min
                 } catch (InterruptedException e) {}
                 boolean isCorrect = Player.p.getIsCorrect();
+                soundMana.play(isCorrect?SoundManager.GOOD: SoundManager.BAD);
                 BoardIO.sevSeg.write(isCorrect?SevenSegment.GOOD__: SevenSegment.BAD___,80);
 
                 try {

@@ -22,3 +22,5 @@ __kernel void kernel_in_range_(__global unsigned char *src, __global unsigned ch
     dst[pix+0] = dst[pix+1] = dst[pix+2] = flag;
 }
 
+
+

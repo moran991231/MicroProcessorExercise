@@ -17,8 +17,6 @@ __kernel void kernel_rgb2hsv(__global unsigned char *src, __global unsigned char
     max = (max > b) ? max : b;
     min = (min < g) ? min : g;
     min = (min < b) ? min : b;
-
-
     if (max == 0)
         hue = sat = 0.0f;
     else {

@@ -7,12 +7,22 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.util.Random;
+import java.util.stream.Stream;
 
 public class PlayActivity extends Activity {
     public static boolean isOn = false;
@@ -67,7 +77,7 @@ public class PlayActivity extends Activity {
             boolean isCorrect = qMaker.isCorrect(redUp, greenUp);
             Player.p.setIsCorrect(isCorrect);
             tvAnswer.setText("ANSWER: " + qMaker.makeAnsStr());
-            tvYourAnswer.setText("YOUR ANSWER: " + qMaker.makeAnsStr(redUp, greenUp));
+            tvYourAnswer.setText("YOU   : " + qMaker.makeAnsStr(redUp, greenUp));
             tvScore.setText(Player.makeScoreStr());
 
             camera.startPreview();
@@ -75,13 +85,52 @@ public class PlayActivity extends Activity {
         }
     };
 
-    private void showResult() {
+    Ranking rnk;
+    private void showResult()  {
         soundMana.play(SoundManager.FINISH);
         setContentView(R.layout.activity_result);
         TextView tv = (TextView) findViewById(R.id.tvScoreResult);
         tv.setText(Player.score + "");
         tv = (TextView) findViewById(R.id.tvResultText);
         tv.setText(Player.getResultString());
+
+
+        EditText et = (EditText) findViewById(R.id.etRanking);
+        rnk = new Ranking();
+        try{
+            InputStreamReader fis = new InputStreamReader(openFileInput(Ranking.FILE_NAME));
+            BufferedReader br = new BufferedReader(fis);
+            while(br.ready())
+                rnk.addRecord(br.readLine());
+            et.setText(rnk.toString(true));
+            fis.close();
+
+        }catch (IOException e){}
+
+        Button btn = (Button) findViewById(R.id.btnName);
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Button b = (Button) v;
+                b.setEnabled(false);
+                EditText etName = (EditText) findViewById(R.id.etName);
+                String name = etName.getText().toString();
+                Log.d("MY_PLAY_ACT", "name:" +name);
+                rnk.addRecord(name, Player.score);
+                Log.d("MY_PLAY_ACT", rnk.toString(true));
+
+                try {
+                    OutputStreamWriter fos = new OutputStreamWriter(PlayActivity.this.openFileOutput(Ranking.FILE_NAME,MODE_PRIVATE));
+                    fos.write(rnk.toString(false));
+                    fos.flush();
+                    fos.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                et.setText(rnk.toString(true));
+            }
+        });
 
     }
 
@@ -132,7 +181,8 @@ public class PlayActivity extends Activity {
             Player.score = 0;
             for (Player.stage = 1; Player.stage <= Player.NUM_STAGE; Player.stage++) {
                 soundMana.play(SoundManager.NEXT);
-                qMaker.make(Player.level);
+                Player.realLevel = Player.level;
+                qMaker.make(Player.realLevel);
                 stageHandler.sendMessage(Message.obtain());
                 try {
                     sleep(3000 + 500 * Player.level);
@@ -159,7 +209,6 @@ public class PlayActivity extends Activity {
             Log.d("MY_PLAY_ACT", "game thread finished");
             Message msg = Message.obtain();
             msg.arg1 = ret;
-//            Player.p.gameFinish();
 
             finishHandler.sendMessage(msg);
         }

@@ -19,6 +19,10 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity {
     RatingBar diffLevel;
 
+    private void showToast(String str){
+        Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
+    }
+
     Handler levelHandler = new Handler() {
         @Override
         public void handleMessage(@NonNull Message msg) {
@@ -37,11 +41,11 @@ public class MainActivity extends AppCompatActivity {
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             if (!MyBitmap.isCaliAvailable()) {
-                Toast.makeText(MainActivity.this, "DO CALIB FIRST", Toast.LENGTH_SHORT).show();
+                showToast("DO CALIB FIRST");
                 return;
             }
             if(PlayActivity.isOn) return;
-            Toast.makeText(MainActivity.this, "GAME START", Toast.LENGTH_SHORT).show();
+            showToast("GAME START");
             Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
             startActivity(intent);
         }

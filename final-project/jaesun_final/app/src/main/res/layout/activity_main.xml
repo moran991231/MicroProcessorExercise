@@ -25,14 +25,16 @@
         android:layout_height="100px"
         android:gravity="bottom|center_horizontal"
         android:text="Control the level (1~8) by pressing Up/Down button" />
+
     <RatingBar
         android:id="@+id/rbLevel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:background="#FFFFFF"
         android:isIndicator="true"
         android:numStars="8"
-        android:stepSize="1"
-        android:rating="1"/>
+        android:rating="1"
+        android:stepSize="1" />
 
     <TextView
         android:layout_width="match_parent"

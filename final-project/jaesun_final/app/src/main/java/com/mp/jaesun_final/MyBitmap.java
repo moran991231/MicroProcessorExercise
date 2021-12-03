@@ -19,15 +19,12 @@ public class MyBitmap {
 
     public static native int inRange(Bitmap bitmap, byte[] ranges);
 
-    public static final int W = 800, H = 480;
-
     private static Matrix mtx_180;
 
     public static byte[] redRange = null, greenRange = null;
 
     public static boolean isCaliAvailable() {
         return redRange != null && greenRange != null;
-
     }
 
     public static Bitmap getImage(byte[] data) {
@@ -43,31 +40,29 @@ public class MyBitmap {
     }
 
     public static Bitmap getCrop(Bitmap img) {
-        final int x = 360, y = 260, miniW = 80, miniH = 80;
+        final int miniW = 80, miniH = 80;
+        int w = img.getWidth(), h = img.getHeight();
+        int x = (w-miniW)/2, y = (h-miniH)/2;
         Bitmap crop = Bitmap.createBitmap(img, x, y, miniW, miniH);
         return crop;
     }
-
-    public static byte[] getHsvRange(Bitmap img) { // cropped img
-        final int MARGIN = 15;
-        final int MASK = 0x00_00_00_FF;
-        rgb2hsv(img);
-        int[] ranges = {255, -255, 255, -255, 255, -255};
-//        int[] hues = new int[255];
-        int sum = 0;
-        int w = img.getWidth(), h = img.getHeight();
-        Log.d("BITMAP", String.format("cropped image size: %d x %d", w, h));
+    public static byte[] img2ByteArr(Bitmap img){
         ByteBuffer buffer = ByteBuffer.allocate(img.getByteCount());
         img.copyPixelsToBuffer(buffer);
+        return buffer.array();
+    }
 
-        byte[] pixels = buffer.array();
-        Log.d("BITMAP", String.format("pixels length: %d", pixels.length));
+    public static byte[] getHsvRange(Bitmap img) { // cropped img
+        final int[] MARGIN = {12, 18, 30}; // H,S,V
+        final int MASK = 0x00_00_00_FF;
+        rgb2hsv(img);
+        int[] ranges = {255, -255, 255, 0, 255, 0};
+        int sum = 0;
+        int w = img.getWidth(), h = img.getHeight();
+        byte[] pixels = img2ByteArr(img);
 
         for (int i = 0; i < w * h * 4; i += 4) {
             //h
-//            hues[pixels[i+0]]++;
-//            ranges[0] = Math.min(ranges[0], (int)pixels[i+0]&MASK);
-//            ranges[1] = Math.max(ranges[1], (int)pixels[i+0]&MASK);
             sum += (int) pixels[i + 0] & MASK;
             //s
             ranges[2] = Math.min(ranges[2], (int) pixels[i + 1] & MASK);
@@ -78,15 +73,16 @@ public class MyBitmap {
         }
         sum /= (w * h);
         ranges[0] = ranges[1] = sum;
-        Log.d("BITMAP", "min max" + arr2str(ranges));
-        ranges[0] = (ranges[0] - MARGIN < 0) ? ranges[0] - MARGIN + 255 : ranges[0] - MARGIN;
-        ranges[1] = (ranges[1] + MARGIN > 255) ? ranges[1] + MARGIN - 255 : ranges[1] + MARGIN;
+        ranges[0] -= MARGIN[0];
+        ranges[0] += (ranges[0] < 0) ? 255 : 0;
+        ranges[1] += MARGIN[0];
+        ranges[1] += (ranges[1] > 255) ? -255 : 0;
 
-        ranges[2] = Math.max(ranges[2] - MARGIN, 0);
-        ranges[3] = Math.min(ranges[3] + MARGIN, 255);
+        ranges[2] = Math.max(ranges[2] - MARGIN[1], 0);
+        ranges[3] = Math.min(ranges[3] + MARGIN[1], 255);
 
-        ranges[4] = Math.max(ranges[4] - MARGIN, 0);
-        ranges[5] = Math.min(ranges[5] + MARGIN, 255);
+        ranges[4] = Math.max(ranges[4] - MARGIN[2], 0);
+        ranges[5] = Math.min(ranges[5] + MARGIN[2], 255);
 
         byte[] ret = new byte[6];
         for (int i = 0; i < 6; i++)
@@ -111,6 +107,7 @@ public class MyBitmap {
         }
         return direction > 0;
     }
+
     public static String arr2str(int[] arr) {
         StringBuilder sb = new StringBuilder();
         sb.append('[');

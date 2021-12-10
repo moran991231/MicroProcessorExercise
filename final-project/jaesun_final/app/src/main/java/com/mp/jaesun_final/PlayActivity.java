@@ -15,17 +15,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
+import com.mp.jaesun_final.helper.FlagState;
+import com.mp.jaesun_final.helper.MyBitmap;
+import com.mp.jaesun_final.helper.Question;
+import com.mp.jaesun_final.helper.Ranking;
+import com.mp.jaesun_final.ioDevices.BoardIO;
+import com.mp.jaesun_final.ioDevices.SevenSegment;
+import com.mp.jaesun_final.ioDevices.SoundManager;
+
 import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.Random;
-import java.util.stream.Stream;
 
 public class PlayActivity extends Activity {
-    public static boolean isOn = false;
     TextView tvQuest, tvAnswer, tvYourAnswer, tvScore, tvStage;
     FrameLayout camPreviewTest;
 
@@ -56,28 +60,47 @@ public class PlayActivity extends Activity {
         }
     };
 
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_play);
+        getUiInstances();
+        mycam = new MyCamera(this, camPreviewTest, null);
+        mycam.pictureCallback = pictureCallback;
+
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+        }
+        new Player().gameStart(new GameThread());
+
+    }
+
+    private void getUiInstances() {
+        tvQuest = (TextView) findViewById(R.id.tvQuest);
+        tvAnswer = (TextView) findViewById(R.id.tvAnswer);
+        tvYourAnswer = (TextView) findViewById(R.id.tvYourAnswer);
+        tvScore = (TextView) findViewById(R.id.tvScore);
+        tvStage = (TextView) findViewById(R.id.tvStage);
+
+        camPreviewTest = (FrameLayout) findViewById(R.id.camPreviewTest);
+
+        soundMana = new SoundManager(this);
+    }
+
     Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
             camera.stopPreview();
             // img processing ...
-            Bitmap img = MyBitmap.getImage(data);
-            int w = img.getWidth(), h = img.getHeight();
-            img = Bitmap.createScaledBitmap(img, w / 4, h / 4, true);
-            MyBitmap.rgb2hsv(img); // hsv
-            Bitmap redTh = img, greenTh = img.copy(img.getConfig(), true);
-            MyBitmap.inRange(redTh, MyBitmap.redRange);
-            boolean redUp = MyBitmap.isUp(redTh);
-            redTh = img = null;
-            boolean greenUp = MyBitmap.isUp(greenTh);
-            MyBitmap.inRange(greenTh, MyBitmap.greenRange);
-            greenTh = null;
+            FlagState fs = MyBitmap.getResult(data);
 
             // UI processing ...
-            boolean isCorrect = qMaker.isCorrect(redUp, greenUp);
+            boolean isCorrect = qMaker.isCorrect(fs.redUp, fs.greenUp);
             Player.p.setIsCorrect(isCorrect);
             tvAnswer.setText("ANSWER: " + qMaker.makeAnsStr());
-            tvYourAnswer.setText("YOU   : " + qMaker.makeAnsStr(redUp, greenUp));
+            tvYourAnswer.setText("YOU   : " + qMaker.makeAnsStr(fs.redUp, fs.greenUp));
             tvScore.setText(Player.makeScoreStr());
 
             camera.startPreview();
@@ -85,8 +108,7 @@ public class PlayActivity extends Activity {
         }
     };
 
-    Ranking rnk;
-    private void showResult()  {
+    private void showResult() {
         soundMana.play(SoundManager.FINISH);
         setContentView(R.layout.activity_result);
         TextView tv = (TextView) findViewById(R.id.tvScoreResult);
@@ -96,16 +118,17 @@ public class PlayActivity extends Activity {
 
 
         EditText et = (EditText) findViewById(R.id.etRanking);
-        rnk = new Ranking();
-        try{
+        Ranking rnk = new Ranking();
+        try {
             InputStreamReader fis = new InputStreamReader(openFileInput(Ranking.FILE_NAME));
             BufferedReader br = new BufferedReader(fis);
-            while(br.ready())
+            while (br.ready())
                 rnk.addRecord(br.readLine());
             et.setText(rnk.toString(true));
             fis.close();
 
-        }catch (IOException e){}
+        } catch (IOException e) {
+        }
 
         Button btn = (Button) findViewById(R.id.btnName);
         btn.setOnClickListener(new View.OnClickListener() {
@@ -115,12 +138,12 @@ public class PlayActivity extends Activity {
                 b.setEnabled(false);
                 EditText etName = (EditText) findViewById(R.id.etName);
                 String name = etName.getText().toString();
-                Log.d("MY_PLAY_ACT", "name:" +name);
+                Log.d("MY_PLAY_ACT", "name:" + name);
                 rnk.addRecord(name, Player.score);
                 Log.d("MY_PLAY_ACT", rnk.toString(true));
 
                 try {
-                    OutputStreamWriter fos = new OutputStreamWriter(PlayActivity.this.openFileOutput(Ranking.FILE_NAME,MODE_PRIVATE));
+                    OutputStreamWriter fos = new OutputStreamWriter(PlayActivity.this.openFileOutput(Ranking.FILE_NAME, MODE_PRIVATE));
                     fos.write(rnk.toString(false));
                     fos.flush();
                     fos.close();
@@ -135,130 +158,56 @@ public class PlayActivity extends Activity {
     }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_play);
-        isOn = true;
-        getUiInstances();
-        mycam = new MyCamera(this, camPreviewTest, null);
-        mycam.pictureCallback = pictureCallback;
-
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-        }
-        new Player().gameStart(new GameThread());
-
-
-    }
-
-    private void getUiInstances() {
-        tvQuest = (TextView) findViewById(R.id.tvQuest);
-        tvAnswer = (TextView) findViewById(R.id.tvAnswer);
-        tvYourAnswer = (TextView) findViewById(R.id.tvYourAnswer);
-        tvScore = (TextView) findViewById(R.id.tvScore);
-        tvStage = (TextView) findViewById(R.id.tvStage);
-
-        camPreviewTest = (FrameLayout) findViewById(R.id.camPreviewTest);
-
-        soundMana = new SoundManager(this);
-
-    }
-
-    @Override
     protected void onDestroy() {
         if (Player.p != null)
             Player.p.gameFinish();
         mycam.close();
         super.onDestroy();
-        isOn = false;
     }
 
     class GameThread extends Thread {
         @Override
         public void run() {
-            int ret = 1;
-            Player.score = 0;
-            for (Player.stage = 1; Player.stage <= Player.NUM_STAGE; Player.stage++) {
-                soundMana.play(SoundManager.NEXT);
-                Player.realLevel = Player.level;
-                qMaker.make(Player.realLevel);
-                stageHandler.sendMessage(Message.obtain());
-                try {
-                    sleep(3000 + 500 * Player.level);
-                } catch (InterruptedException e) {
-                    ret = -1;
-                    break;
-                }
-                mycam.takePicture();
-                try {
-                    sleep(1 * 60 * 1000); // 1min
-                } catch (InterruptedException e) {
-                }
-                boolean isCorrect = Player.p.getIsCorrect();
-                soundMana.play(isCorrect ? SoundManager.GOOD : SoundManager.BAD);
-                BoardIO.sevSeg.write(isCorrect ? SevenSegment.GOOD__ : SevenSegment.BAD___, 80);
+            try {
+                int ret = 1;
+                Player.score = 0;
+                for (Player.stage = 1; Player.stage <= Player.NUM_STAGE; Player.stage++) {
+                    soundMana.play(SoundManager.NEXT);
+                    Player.realLevel = Player.level;
+                    qMaker.make(Player.realLevel);
+                    stageHandler.sendMessage(Message.obtain());
+                    try {
+                        sleep(3000 + 500 * Player.level);
+                    } catch (InterruptedException e) {
+                        ret = -1;
+                        break;
+                    }
+                    mycam.takePicture();
+                    try {
+                        sleep(1 * 60 * 1000); // 1min
+                    } catch (InterruptedException e) {
+                    }
+                    boolean isCorrect = Player.p.getIsCorrect();
+                    soundMana.play(isCorrect ? SoundManager.GOOD : SoundManager.BAD);
+                    BoardIO.sevSeg.write(isCorrect ? SevenSegment.GOOD__ : SevenSegment.BAD___, 80);
 
-                try {
-                    sleep(1000l);
-                } catch (InterruptedException e) {
-                    ret = -1;
-                    break;
+                    try {
+                        sleep(1000l);
+                    } catch (InterruptedException e) {
+                        ret = -1;
+                        break;
+                    }
                 }
+                Log.d("MY_PLAY_ACT", "game thread finished");
+                Message msg = Message.obtain();
+                msg.arg1 = ret;
+
+                finishHandler.sendMessage(msg);
+            } catch (Exception e) {
+                return;
             }
-            Log.d("MY_PLAY_ACT", "game thread finished");
-            Message msg = Message.obtain();
-            msg.arg1 = ret;
-
-            finishHandler.sendMessage(msg);
         }
     }
-
-}
-
-
-class Question {
-    private final String[] flags = {"청기 ", "홍기 ", "전부 "};
-    private final String[] actives1 = {"내리고 ", "올리고 ", "올리지 말고 ", "내리지 말고 "};
-    private final String[] actives2 = {"내려", "올려", "올리지 마", "내리지 마"};
-    public boolean redUp = false, greenUp = false;
-    private Random rand = new Random(System.currentTimeMillis());
-    public String quest = "";
-
-    public String make(int level) {
-        StringBuilder sb = new StringBuilder(0);
-        int ret = 0;
-        for (int i = 0; i < level - 1; i++) {
-            ret = makeCmd(actives1, ret, sb);
-        }
-        ret = makeCmd(actives2, ret, sb);
-        greenUp = (ret & 1) != 0;
-        redUp = (ret & 2) != 0;
-        quest = sb.toString();
-        return quest;
-    }
-
-    private int makeCmd(String[] actives, int ret, StringBuilder sb) {
-        int flag = rand.nextInt(3), act = rand.nextInt(4);
-        sb.append(flags[flag]).append(actives[act]);
-        flag++;
-        act %= 2;
-        ret = (ret & ~flag) | (act | (act << 1)) & flag;
-        return ret;
-    }
-
-    public String makeAnsStr() {
-        return String.format("red: %s  green: %s", redUp ? "UP" : "DOWN", greenUp ? "UP" : "DOWN");
-    }
-
-    public String makeAnsStr(boolean rUp, boolean gUp) {
-        return String.format("red: %s  green: %s", rUp ? "UP" : "DOWN", gUp ? "UP" : "DOWN");
-    }
-
-    public boolean isCorrect(boolean rUp, boolean gUp) {
-        return (redUp == rUp) && (greenUp == gUp);
-    }
-
 
 }
 

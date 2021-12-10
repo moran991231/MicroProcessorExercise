@@ -1,9 +1,6 @@
 package com.mp.jaesun_final;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.hardware.Camera;
 import android.util.Log;
 import android.view.SurfaceHolder;
@@ -11,10 +8,7 @@ import android.view.SurfaceView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import java.io.IOException;
-import java.util.List;
 
 public class MyCamera {
 
@@ -29,13 +23,12 @@ public class MyCamera {
         open(context);
     }
 
-
     public void open(Context context) {
         if (camera != null) return;
         camera = getCameraInstance();
         camera.setDisplayOrientation(180);
         preview = new CameraPreview(context, camera);
-        imgView.addView(preview,0);
+        imgView.addView(preview, 0);
 
     }
 
@@ -55,7 +48,8 @@ public class MyCamera {
             return null;
         }
     }
-    public int mode=0;
+
+    public int mode = 0;
     public Camera.PictureCallback pictureCallback = new Camera.PictureCallback() {
         @Override
         public void onPictureTaken(byte[] data, Camera camera) {
@@ -65,7 +59,6 @@ public class MyCamera {
     public void takePicture() {
         camera.takePicture(null, null, pictureCallback);
     }
-
 
 }
 
@@ -82,9 +75,10 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
         mHolder.addCallback(this);
 
     }
+
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int w, int h) {
-        if(cam==null) return;
+        if (cam == null) return;
         if (mHolder.getSurface() == null) {
             return;
         }
@@ -98,14 +92,13 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
             Log.d(VIEW_LOG_TAG, "Error starting camera preview ");
         }
     }
+
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         if (cam != null) {
             resume();
         }
     }
-
-
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -120,11 +113,10 @@ class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
     public void pause() {
-        if(cam==null) return;
+        if (cam == null) return;
         cam.stopPreview();
         cam = null;
     }

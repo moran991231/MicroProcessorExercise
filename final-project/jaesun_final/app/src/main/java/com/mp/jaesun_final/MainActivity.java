@@ -4,22 +4,23 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.view.Display;
 import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.Toast;
 
+import com.mp.jaesun_final.helper.MyBitmap;
+import com.mp.jaesun_final.ioDevices.BoardIO;
+import com.mp.jaesun_final.ioDevices.DoGpioButtonClicked;
+import com.mp.jaesun_final.ioDevices.GpioButton;
+
 public class MainActivity extends AppCompatActivity {
     RatingBar diffLevel;
+    boolean gameAvailable = false;
 
-    private void showToast(String str){
+    private void showToast(String str) {
         Toast.makeText(this, str, Toast.LENGTH_SHORT).show();
     }
 
@@ -44,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 showToast("DO CALIB FIRST");
                 return;
             }
-            if(PlayActivity.isOn) return;
+            if (!gameAvailable) return;
             showToast("GAME START");
             Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
             startActivity(intent);
@@ -76,35 +77,39 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
 
         });
+        gameAvailable = true;
 
     }
 
     private void makeBoardIOInstances() {
-        if (BoardIO.gpioBtn == null)
-            BoardIO.gpioBtn = new GpioButton(new DoGpioButtonClicked() {
-                @Override
-                public void doThis(int directoin) {
-                    Message msg = Message.obtain();
-                    if (directoin == GpioButton.DOWN) {
-                        msg.arg1 = -1;
-                        levelHandler.sendMessage(msg);
-                    } else if (directoin == GpioButton.UP) {
-                        msg.arg1 = 1;
-                        levelHandler.sendMessage(msg);
-                    } else if (directoin == GpioButton.CENTER) {
-                        playHandler.sendMessage(msg);
-                    }
+        if (BoardIO.gpioBtn == null) {
+            BoardIO.gpioBtn = new GpioButton("/dev/sm9s5422_interrupt", BoardIO.O_RDONLY);
+        }
+
+        BoardIO.gpioBtn.setAfterClick(new DoGpioButtonClicked() {
+            @Override
+            public void doThis(int directoin) {
+                Message msg = Message.obtain();
+                if (directoin == GpioButton.DOWN) {
+                    msg.arg1 = -1;
+                    levelHandler.sendMessage(msg);
+                } else if (directoin == GpioButton.UP) {
+                    msg.arg1 = 1;
+                    levelHandler.sendMessage(msg);
+                } else if (directoin == GpioButton.CENTER) {
+                    playHandler.sendMessage(msg);
                 }
-            });
-        if (BoardIO.led == null)
-            BoardIO.led = new Led();
-        if (BoardIO.sevSeg == null)
-            BoardIO.sevSeg = new SevenSegment();
+
+            }
+        });
+
+        diffLevel.setRating(Player.level);
     }
 
 
     @Override
     protected void onResume() {
+        gameAvailable = true;
         super.onResume();
         makeBoardIOInstances();
         BoardIO.gpioBtn.open();
@@ -115,6 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPause() {
+        gameAvailable = false;
 //        BoardIO.gpioBtn.close();
 //        BoardIO.led.close();
 //        BoardIO.sevSeg.close();
@@ -124,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        BoardIO.led.writeStick(0);
+        gameAvailable = false;
         BoardIO.gpioBtn.close();
         BoardIO.led.close();
         BoardIO.sevSeg.close();

@@ -11,41 +11,44 @@ import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.mp.jaesun_final.helper.MyBitmap;
+
 public class CaliActivity extends Activity {
 
     FrameLayout camPreview;
     ImageView capturedView;
     MyCamera mycam;
-    boolean isCaliForRed=true;
-    final int SET_RANGE=0, TEST_THESHOLD=1;
-    int mode=SET_RANGE;
+    boolean isCaliForRed = true;
+    final int SET_RANGE = 0, TEST_THESHOLD = 1;
+    int mode = SET_RANGE;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cali);
 
         camPreview = (FrameLayout) findViewById(R.id.camPreviewCali);
-        capturedView = (ImageView)findViewById(R.id.ivCali);
-        mycam = new MyCamera(this, camPreview,capturedView);
+        capturedView = (ImageView) findViewById(R.id.ivCali);
+        mycam = new MyCamera(this, camPreview, capturedView);
 
         Button btn = (Button) findViewById(R.id.btnCali);
-        btn.setOnClickListener(v->{
+        btn.setOnClickListener(v -> {
             mode = SET_RANGE;
             mycam.takePicture();
         });
         btn = (Button) findViewById(R.id.btnThreshCali);
-        btn.setOnClickListener(v->{
+        btn.setOnClickListener(v -> {
             mode = TEST_THESHOLD;
             mycam.takePicture();
         });
-        RadioGroup rg = (RadioGroup)   findViewById(R.id.rgCali);
-        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener(){
+        RadioGroup rg = (RadioGroup) findViewById(R.id.rgCali);
+        rg.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId == R.id.rbRed)
-                    isCaliForRed=true;
+                if (checkedId == R.id.rbRed)
+                    isCaliForRed = true;
                 else
-                    isCaliForRed=false;
+                    isCaliForRed = false;
                 capturedView.setImageResource(0);
             }
         });
@@ -56,29 +59,29 @@ public class CaliActivity extends Activity {
                 Bitmap img = MyBitmap.getImage(data);
                 int temp = mode;
                 byte[] range;
-                switch(mode){
+                switch (mode) {
                     case SET_RANGE:
                         img = MyBitmap.getCrop(img);
-                        Bitmap tempImg = img.copy(img.getConfig(),true);
-                         range = MyBitmap.getHsvRange(tempImg);
-                        if(isCaliForRed)
+                        Bitmap tempImg = img.copy(img.getConfig(), true);
+                        range = MyBitmap.getHsvRange(tempImg);
+                        if (isCaliForRed)
                             MyBitmap.redRange = range;
                         else
                             MyBitmap.greenRange = range;
                         break;
                     case TEST_THESHOLD:
-                        range = isCaliForRed?MyBitmap.redRange:MyBitmap.greenRange;
-                        if(range==null){
+                        range = isCaliForRed ? MyBitmap.redRange : MyBitmap.greenRange;
+                        if (range == null) {
                             Log.d("MY_CALI_ACT", "RANGE IS NULL");
-                            Toast.makeText(CaliActivity.this,"DO CALI BEFORE TEST",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(CaliActivity.this, "DO CALI BEFORE TEST", Toast.LENGTH_SHORT).show();
                             break;
                         }
                         MyBitmap.rgb2hsv(img);
                         MyBitmap.inRange(img, range);
                         break;
                 }
-                if(MyBitmap.isCaliAvailable())
-                    Toast.makeText(CaliActivity.this,"CALI COMPLETED! NOW GO TO PLAY!",Toast.LENGTH_SHORT).show();
+                if (MyBitmap.isCaliAvailable())
+                    Toast.makeText(CaliActivity.this, "CALI COMPLETED! NOW GO TO PLAY!", Toast.LENGTH_SHORT).show();
 
                 capturedView.setImageBitmap(img);
                 camera.startPreview();
@@ -91,7 +94,7 @@ public class CaliActivity extends Activity {
     @Override
     protected void onDestroy() {
         mycam.close();
-        Log.d("MY_CALI_ACT","destroyed~~~~");
+        Log.d("MY_CALI_ACT", "destroyed~~~~");
         super.onDestroy();
     }
 }

@@ -1,13 +1,10 @@
-package com.mp.jaesun_final;
+package com.mp.jaesun_final.helper;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.util.Log;
 
-import java.io.ByteArrayOutputStream;
-import java.lang.reflect.Array;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 
 public class MyBitmap {
@@ -42,11 +39,12 @@ public class MyBitmap {
     public static Bitmap getCrop(Bitmap img) {
         final int miniW = 80, miniH = 80;
         int w = img.getWidth(), h = img.getHeight();
-        int x = (w-miniW)/2, y = (h-miniH)/2;
+        int x = (w - miniW) / 2, y = (h - miniH) / 2;
         Bitmap crop = Bitmap.createBitmap(img, x, y, miniW, miniH);
         return crop;
     }
-    public static byte[] img2ByteArr(Bitmap img){
+
+    public static byte[] img2ByteArr(Bitmap img) {
         ByteBuffer buffer = ByteBuffer.allocate(img.getByteCount());
         img.copyPixelsToBuffer(buffer);
         return buffer.array();
@@ -126,14 +124,26 @@ public class MyBitmap {
         return sb.toString();
     }
 
-    public static int getMaxIndex(int[] arr) {
-        int len = arr.length;
-        int max = arr[0], max_i = 0;
-        for (int i = 1; i < len; i++)
-            if (arr[i] > max) {
-                max = arr[i];
-                max_i = i;
-            }
-        return max_i;
+    public static FlagState getResult(byte[] data) {
+        Bitmap img = MyBitmap.getImage(data);
+        int w = img.getWidth(), h = img.getHeight();
+        img = Bitmap.createScaledBitmap(img, w / 4, h / 4, true);
+
+
+        MyBitmap.rgb2hsv(img); // hsv
+        Bitmap redTh = img;
+        Bitmap greenTh = img.copy(img.getConfig(), true);
+
+        MyBitmap.inRange(redTh, MyBitmap.redRange);
+        boolean redUp = MyBitmap.isUp(redTh);
+        redTh = img = null;
+
+        MyBitmap.inRange(greenTh, MyBitmap.greenRange);
+        boolean greenUp = MyBitmap.isUp(greenTh);
+        greenTh = null;
+
+        return new FlagState(redUp, greenUp);
     }
+
 }
+

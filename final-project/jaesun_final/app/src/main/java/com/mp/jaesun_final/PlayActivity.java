@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -124,7 +125,7 @@ public class PlayActivity extends Activity {
             BufferedReader br = new BufferedReader(fis);
             while (br.ready())
                 rnk.addRecord(br.readLine());
-            et.setText(rnk.toString(true));
+            et.setText(rnk.toStringShow());
             fis.close();
 
         } catch (IOException e) {
@@ -135,23 +136,27 @@ public class PlayActivity extends Activity {
             @Override
             public void onClick(View v) {
                 Button b = (Button) v;
-                b.setEnabled(false);
                 EditText etName = (EditText) findViewById(R.id.etName);
                 String name = etName.getText().toString();
-                Log.d("MY_PLAY_ACT", "name:" + name);
+                if(name.length()==0){
+                    Toast.makeText(PlayActivity.this,"Name is too short",Toast.LENGTH_SHORT).show();
+                    return;
+                }else if(name.charAt(0)==' '){
+                    Toast.makeText(PlayActivity.this,"Don't include space in the name",Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 rnk.addRecord(name, Player.score);
-                Log.d("MY_PLAY_ACT", rnk.toString(true));
-
                 try {
                     OutputStreamWriter fos = new OutputStreamWriter(PlayActivity.this.openFileOutput(Ranking.FILE_NAME, MODE_PRIVATE));
-                    fos.write(rnk.toString(false));
+                    fos.write(rnk.toString());
                     fos.flush();
                     fos.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                et.setText(rnk.toString(true));
+                et.setText(rnk.toStringShow());
+                b.setEnabled(false);
             }
         });
 
@@ -171,6 +176,7 @@ public class PlayActivity extends Activity {
             try {
                 int ret = 1;
                 Player.score = 0;
+                Player.numCorrect=0;
                 for (Player.stage = 1; Player.stage <= Player.NUM_STAGE; Player.stage++) {
                     soundMana.play(SoundManager.NEXT);
                     Player.realLevel = Player.level;

@@ -2,7 +2,7 @@ package com.mp.jaesun_final;
 
 public class Player {
     public static Player p = null;
-    public static int score = 0, level = 1, stage = 0, realLevel = 1;
+    public static int score = 0, level = 1, stage = 0, realLevel = 1, numCorrect=0;
     private static final String tag = "PLAYER";
     public static final int NUM_STAGE = 5;
     private PlayActivity.GameThread gameThread = null;
@@ -13,7 +13,10 @@ public class Player {
         if (gameThread == null) return;
         if (gameThread.getState() != Thread.State.RUNNABLE)
             gameThread.interrupt();
-        if (isCorrect) score += realLevel;
+        if (isCorrect) {
+            score+= realLevel;
+            numCorrect++;
+        }
     }
 
     public boolean getIsCorrect() {
@@ -45,10 +48,10 @@ public class Player {
 
 
     public static String getResultString() {
-        if (score == NUM_STAGE) return "PERFECT";
-        else if (score >= 4 * NUM_STAGE / NUM_STAGE) return "VERY NICE";
-        else if (score >= 3 * NUM_STAGE / NUM_STAGE) return "GOOD";
-        else if (score >= 2 * NUM_STAGE / NUM_STAGE) return "NOT BAD";
+        if (numCorrect == NUM_STAGE) return "PERFECT";
+        else if (numCorrect >= 4 * NUM_STAGE / NUM_STAGE) return "VERY NICE";
+        else if (numCorrect >= 3 * NUM_STAGE / NUM_STAGE) return "GOOD";
+        else if (numCorrect >= 2 * NUM_STAGE / NUM_STAGE) return "NOT BAD";
         else return "POOR";
     }
 

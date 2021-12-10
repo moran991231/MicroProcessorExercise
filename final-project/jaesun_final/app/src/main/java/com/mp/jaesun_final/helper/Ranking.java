@@ -16,6 +16,7 @@ public class Ranking {
     }
 
     public void addRecord(String line) {
+        if(line.length()==0) return;
         Record temp = new Record(line);
         for (Record r : list) {
             if (r.equalsTo(temp)) return; // already record exist
@@ -32,18 +33,27 @@ public class Ranking {
         Collections.sort(list);
     }
 
-    public String toString(boolean isNum) {
+    public String toString() {
         Collections.sort(list);
         StringBuilder sb = new StringBuilder();
         int len = Math.min(10, list.size());
         for (int i = 0; i < len; i++) {
-            if (isNum) {
-                sb.append(i + 1).append(' ');
-            }
             sb.append(list.get(i).toString()).append('\n');
         }
         return sb.toString();
     }
+    public String toStringShow(){
+        Collections.sort(list);
+        StringBuilder sb = new StringBuilder();
+        int len = Math.min(10, list.size());
+        for (int i = 0; i < len; i++) {
+            sb.append(String.format("%2d위 ",i+1));
+            sb.append(list.get(i).toStringShow()).append('\n');
+        }
+        return sb.toString();
+
+    }
+
 
 }
 
@@ -64,6 +74,9 @@ class Record implements Comparable<Record> {
 
     public String toString() {
         return String.format("%10s %2d", name, score);
+    }
+    public String toStringShow(){
+        return String.format("%2d점  %s",score,name);
     }
 
     public boolean equalsTo(Record o) {

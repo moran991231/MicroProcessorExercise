@@ -26,7 +26,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="YOUR SCORE"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textSize="20sp"/>
 
 
     <LinearLayout
@@ -40,7 +41,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="{score}"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:textSize="20sp" />
 
 
     </LinearLayout>
@@ -50,7 +52,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="poor/not bad/good/very nice/perfect"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:textSize="20sp" />
 
     <TextView
         android:layout_width="match_parent"

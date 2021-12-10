@@ -71,12 +71,6 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        btn = (Button) findViewById(R.id.btnDebug);
-        btn.setOnClickListener(v -> {
-            Intent intent = new Intent(getApplicationContext(), PlayActivity.class);
-            startActivity(intent);
-
-        });
         gameAvailable = true;
 
     }

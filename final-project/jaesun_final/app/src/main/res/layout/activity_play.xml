@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".PlayActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200px">
+
+        <TextView
+            android:id="@+id/tvQuest"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#D9D1A9"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="question here"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/camPreviewTest"
+        android:layout_width="800px"
+        android:layout_height="600px" >
+
+        <ImageView
+            android:layout_width="800px"
+            android:layout_height="20px"
+            android:layout_gravity="center"
+            android:background="@drawable/horizontal_bar"
+            />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tvAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center" />
+
+
+    <TextView
+        android:id="@+id/tvYourAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvScore"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="SCORE: "
+            android:textAlignment="center" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tvStage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="STAGE: "
+                android:textAlignment="center" />
+
+        </LinearLayout>
+
+
+
+    </LinearLayout>
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>

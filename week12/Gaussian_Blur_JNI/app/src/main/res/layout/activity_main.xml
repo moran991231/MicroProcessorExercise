@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="match_parent"
+        android:layout_height="367dp"
+        tools:layout_editor_absoluteX="-1dp"
+        tools:layout_editor_absoluteY="70dp" />
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/bCpu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="CPU BLUR"
+            tools:layout_editor_absoluteX="16dp"
+            tools:layout_editor_absoluteY="463dp" />
+
+        <Button
+            android:id="@+id/bGpu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="GPU BLUR"
+            tools:layout_editor_absoluteX="123dp"
+            tools:layout_editor_absoluteY="463dp" />
+
+        <Button
+            android:id="@+id/bOrig"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="ORIGINAL"
+            tools:layout_editor_absoluteX="234dp"
+            tools:layout_editor_absoluteY="463dp" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        tools:layout_editor_absoluteX="16dp"
+        tools:layout_editor_absoluteY="526dp" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="   2018440059 Jaesun Park"
+        tools:layout_editor_absoluteX="17dp"
+        tools:layout_editor_absoluteY="553dp" />
+</androidx.appcompat.widget.LinearLayoutCompat>

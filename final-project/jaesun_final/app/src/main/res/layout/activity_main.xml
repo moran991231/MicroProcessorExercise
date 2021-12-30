@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity"
+    android:gravity="center">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="360px"
+        android:text="두뇌 풀 가동! 청기홍기"
+        android:textSize="30sp"
+        android:textAlignment="center" />
+    <Button
+        android:id="@+id/btnCaliShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="CALIBRATION" />
+
+    <Button
+        android:id="@+id/btnTestShow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TEST CALIB" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="100px"
+        android:gravity="bottom|center_horizontal"
+        android:text="Control the level (1~8) by pressing Up/Down button" />
+
+    <RatingBar
+        android:id="@+id/rbLevel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:isIndicator="true"
+        android:numStars="8"
+        android:rating="1"
+        android:stepSize="1" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="GAME START by pressing Center button"
+        android:textAlignment="center" />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+</LinearLayout>
+
+
+
+</androidx.appcompat.widget.LinearLayoutCompat>
